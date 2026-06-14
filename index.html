@@ -2,66 +2,50 @@
 <html>
 
 <head>
-    <title>Architect OS</title>
+    <title>Nightfall OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 
 <body
-    style="margin: 0; padding: 0; background-image: url('https://c4.wallpaperflare.com/wallpaper/321/1023/6…ll-anime-gundam-seed-hd-art-wallpaper-preview.jpg'); background-size: cover; background-position: center; height: 100vh; font-family: 'Courier New', Courier, monospace; overflow: hidden;">
+    style="margin: 0; padding: 0; background-image: url('wallpaperflare.com_wallpaper.jpg'); background-size: cover; background-position: center; height: 100vh; font-family: 'VT323', monospace; overflow: hidden; color: #d4c5e3;">
 
     <div
-        style="position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(15px); background-color: rgba(10, 10, 15, 0.6); color: #ffffff; padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); z-index: 100; font-family: 'Segoe UI', sans-serif;">
+        style="position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: rgba(15, 10, 25, 0.9); border-bottom: 2px solid #ff9d00; padding: 8px 0; z-index: 100; font-size: 22px;">
 
-        <div style="margin-left: 20px; font-weight: bold; letter-spacing: 1px;">
-            Architect OS // Node Workspace
+        <div style="margin-left: 20px; color: #ff9d00; text-shadow: 2px 2px 0px #000;">
+            Nightfall_OS
         </div>
 
-        <div style="background-color: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 500;">
-            Autobuddy Services: Active
-        </div>
-
-        <div id="timeElement"
-            style="margin-right: 20px; font-size: 0.95em; background-color: rgba(168, 127, 251, 0.2); padding: 6px 16px; border-radius: 8px; border: 1px solid rgba(168, 127, 251, 0.3);">
-            Loading Time...
+        <div id="timeElement" style="margin-right: 20px; text-shadow: 2px 2px 0px #000;">
+            --:--
         </div>
     </div>
 
     <div
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 420px; background-color: rgba(20, 20, 25, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(168, 127, 251, 0.3); border-radius: 16px; padding: 30px; color: #e0e0e0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);">
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; background-color: rgba(20, 12, 30, 0.85); border: 2px solid #ff9d00; padding: 30px; text-align: center; box-shadow: 8px 8px 0px rgba(0,0,0,0.8);">
 
-        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Architect" style="width: 100px; border-radius: 50%; border: 2px solid #a87ffb; box-shadow: 0 0 15px rgba(168, 127, 251, 0.4);"
-                alt="Avatar" />
-        </div>
+        <h1 style="color: #ff9d00; font-size: 36px; margin-top: 0; text-shadow: 2px 2px 0px #000;">SYSTEM BOOT</h1>
 
-        <h2 style="text-align: center; color: #ffffff; margin-top: 0; font-family: 'Segoe UI', sans-serif;">Welcome Back</h2>
+        <p style="font-size: 24px; margin-bottom: 30px;">Welcome to the sanctuary.</p>
 
-        <div style="background-color: rgba(0,0,0,0.5); border-radius: 8px; padding: 15px; margin-bottom: 25px;">
-            <p style="margin: 0 0 10px 0; color: #a87ffb; font-weight: bold;">System Status:</p>
-            <ul style="list-style-type: none; padding: 0; margin: 0; font-size: 0.95em; line-height: 1.8;">
-                <li>> 4-Player Team Sync... <strong style="color: #4caf50; float: right;">[OK]</strong></li>
-                <li>> VIT-AP Network... <strong style="color: #4caf50; float: right;">[OK]</strong></li>
-                <li>> Video Render Engine... <strong style="color: #4caf50; float: right;">[OK]</strong></li>
-            </ul>
-        </div>
+        <img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=Nightfall"
+            style="width: 100px; border: 2px solid #ff9d00; background-color: #0f0a19; margin-bottom: 30px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8);" alt="Avatar">
+
+        <br>
 
         <button
-            style="width: 100%; background-color: #a87ffb; color: #121212; padding: 14px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 1.05em; font-family: 'Segoe UI', sans-serif;">
-            Initialize Workspace
+            style="background-color: #ff9d00; color: #0f0a19; font-family: 'VT323', monospace; font-size: 24px; padding: 10px 25px; border: 2px solid #0f0a19; cursor: pointer; box-shadow: 4px 4px 0px #000; transition: 0.2s;">
+            ENTER SYSTEM
         </button>
     </div>
 
     <script>
         function updateTime() {
-            // Gets the time and formats it cleanly (e.g., "02:26:45 PM")
-            var currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            // Injects it into the Top Bar
+            var currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.querySelector("#timeElement").innerHTML = currentTime;
         }
 
-        // Tells the browser to run the function every 1000 milliseconds (1 second)
         setInterval(updateTime, 1000);
-
-        // Runs it once immediately so there is no visual delay on page load
         updateTime(); 
     </script>
 </body>
