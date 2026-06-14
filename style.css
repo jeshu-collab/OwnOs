@@ -109,3 +109,97 @@ body {
     padding: 30px;
     text-align: center;
 }
+
+/* ========================= */
+/* MACOS DOCK STYLES (SLIM)  */
+/* ========================= */
+
+.mac-dock {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+}
+
+.dock-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    /* Slimmer spacing between icons */
+    padding: 6px 10px;
+    /* Slimmer top/bottom padding */
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    /* Slightly tighter curves */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    /* Removed explicit height so the glass hugs the icons perfectly */
+}
+
+.dock-item {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    width: 38px;
+    /* Slimmer base icon size */
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dock-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    /* Softer drop shadow */
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --- THE HOVER MAGNIFY EFFECT --- */
+.dock-item:hover {
+    width: 55px;
+    /* Scaled-down magnification */
+    height: 55px;
+    margin: 0 6px;
+    /* Pushes sibling icons slightly away */
+}
+
+/* Tooltip that appears above the icon on hover */
+.dock-tooltip {
+    position: absolute;
+    top: -40px;
+    /* Pulled down slightly to match slimmer dock */
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    /* Slightly smaller text */
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dock-item:hover .dock-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
