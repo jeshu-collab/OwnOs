@@ -2,51 +2,241 @@
 <html>
 
 <head>
-    <title>Nightfall OS</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <title>Premium Web OS</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* A sleek, dark macOS-style abstract wallpaper */
+            background-image: url('./wallpaperflare.com_wallpaper.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        /* --- PREMIUM UI CLASSES --- */
+
+        .top-bar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(20, 20, 25, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 0;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .menu-item {
+            margin-left: 20px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .window {
+            /* Flexbox setup to stack the header and content vertically */
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 20%;
+            left: 30%;
+            width: 500px;
+            /* The Glassmorphism Effect */
+            background-color: rgba(30, 30, 35, 0.65);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .window-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            /* Grab cursor shows the user they can drag it */
+            cursor: grab;
+            position: relative;
+        }
+
+        .window-header:active {
+            cursor: grabbing;
+        }
+
+        .window-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* macOS style traffic light buttons */
+        .window-controls {
+            position: absolute;
+            left: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-close {
+            background-color: #ff5f56;
+        }
+
+        .btn-min {
+            background-color: #ffbd2e;
+        }
+
+        .btn-max {
+            background-color: #27c93f;
+        }
+
+        .window-content {
+            padding: 30px;
+            text-align: center;
+        }
+    </style>
 </head>
 
-<body
-    style="margin: 0; padding: 0; background-image: url('wallpaperflare.com_wallpaper.jpg'); background-size: cover; background-position: center; height: 100vh; font-family: 'VT323', monospace; overflow: hidden; color: #d4c5e3;">
+<body>
 
-    <div
-        style="position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: rgba(15, 10, 25, 0.9); border-bottom: 2px solid #ff9d00; padding: 8px 0; z-index: 100; font-size: 22px;">
-
-        <div style="margin-left: 20px; color: #ff9d00; text-shadow: 2px 2px 0px #000;">
-            Nightfall_OS
+    <div class="top-bar">
+        <div id="openBtn" class="menu-item">
+             Premium OS
         </div>
 
-        <div id="timeElement" style="margin-right: 20px; text-shadow: 2px 2px 0px #000;">
-            --:--
+        <div id="timeElement" style="margin-right: 20px;">
+            Loading...
         </div>
     </div>
 
-    <div
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; background-color: rgba(20, 12, 30, 0.85); border: 2px solid #ff9d00; padding: 30px; text-align: center; box-shadow: 8px 8px 0px rgba(0,0,0,0.8);">
+    <div id="widget" class="window">
 
-        <h1 style="color: #ff9d00; font-size: 36px; margin-top: 0; text-shadow: 2px 2px 0px #000;">SYSTEM BOOT</h1>
+        <div id="widgetheader" class="window-header">
+            <div class="window-controls">
+                <button id="closeBtn" class="control-btn btn-close"></button>
+                <button class="control-btn btn-min"></button>
+                <button class="control-btn btn-max"></button>
+            </div>
+            <div class="window-title">System Properties</div>
+        </div>
 
-        <p style="font-size: 24px; margin-bottom: 30px;">Welcome to the sanctuary.</p>
-
-        <img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=Nightfall"
-            style="width: 100px; border: 2px solid #ff9d00; background-color: #0f0a19; margin-bottom: 30px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8);" alt="Avatar">
-
-        <br>
-
-        <button
-            style="background-color: #ff9d00; color: #0f0a19; font-family: 'VT323', monospace; font-size: 24px; padding: 10px 25px; border: 2px solid #0f0a19; cursor: pointer; box-shadow: 4px 4px 0px #000; transition: 0.2s;">
-            ENTER SYSTEM
-        </button>
+        <div class="window-content">
+            <h2 style="margin-top: 0; font-weight: 500;">Welcome to the Workspace</h2>
+            <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">
+                This window is fully draggable, features a premium glassmorphic blur, and can be closed or reopened from the Top Bar.
+            </p>
+        </div>
     </div>
 
     <script>
+        // --- 1. CLOCK LOGIC (From Part 2) ---
         function updateTime() {
-            var currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            var options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            var currentTime = new Date().toLocaleString('en-US', options).replace(/,/g, '');
             document.querySelector("#timeElement").innerHTML = currentTime;
         }
-
         setInterval(updateTime, 1000);
-        updateTime(); 
+        updateTime();
+
+
+        // --- 2. OPEN & CLOSE LOGIC (Your exact snippet) ---
+        const widget = document.getElementById("widget");
+
+        document.getElementById("openBtn").onclick = function () {
+            widget.style.display = "flex";
+        };
+
+        document.getElementById("closeBtn").onclick = function () {
+            widget.style.display = "none";
+        };
+
+
+        // --- 3. DRAGGING LOGIC (Your exact snippet) ---
+        makeDraggable(document.getElementById("widget"));
+
+        function makeDraggable(element) {
+            // Previous mouse position
+            let previousMouseX = 0;
+            let previousMouseY = 0;
+
+            // Mouse movement amount
+            let deltaX = 0;
+            let deltaY = 0;
+
+            // Check if a drag handle/header exists
+            let header = document.getElementById(element.id + "header");
+
+            if (header) {
+                // Drag only from header
+                header.onmousedown = startDragging;
+            } else {
+                // Drag from anywhere inside element
+                element.onmousedown = startDragging;
+            }
+
+            // Runs when mouse button is pressed
+            function startDragging(event) {
+                event.preventDefault();
+
+                // Remember mouse position at start
+                previousMouseX = event.clientX;
+                previousMouseY = event.clientY;
+
+                // Listen for dragging
+                document.onmousemove = dragElement;
+
+                // Listen for mouse release
+                document.onmouseup = stopDragging;
+            }
+
+            // Runs every time mouse moves
+            function dragElement(event) {
+                event.preventDefault();
+
+                // Calculate mouse movement
+                deltaX = event.clientX - previousMouseX;
+                deltaY = event.clientY - previousMouseY;
+
+                // Update stored mouse position
+                previousMouseX = event.clientX;
+                previousMouseY = event.clientY;
+
+                // Move element by same amount as mouse
+                element.style.left = element.offsetLeft + deltaX + "px";
+                element.style.top = element.offsetTop + deltaY + "px";
+            }
+
+            // Runs when mouse button is released
+            function stopDragging() {
+                // Remove event listeners
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        }
     </script>
 </body>
 
