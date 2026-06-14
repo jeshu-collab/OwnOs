@@ -3,129 +3,14 @@
 
 <head>
     <title>Premium Web OS</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            /* A sleek, dark macOS-style abstract wallpaper */
-            background-image: url('./wallpaperflare.com_wallpaper.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            color: #ffffff;
-        }
-
-        /* --- PREMIUM UI CLASSES --- */
-
-        .top-bar {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(20, 20, 25, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 0;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .menu-item {
-            margin-left: 20px;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-
-        .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .window {
-            /* Flexbox setup to stack the header and content vertically */
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            top: 20%;
-            left: 30%;
-            width: 500px;
-            /* The Glassmorphism Effect */
-            background-color: rgba(30, 30, 35, 0.65);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-        }
-
-        .window-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            /* Grab cursor shows the user they can drag it */
-            cursor: grab;
-            position: relative;
-        }
-
-        .window-header:active {
-            cursor: grabbing;
-        }
-
-        .window-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* macOS style traffic light buttons */
-        .window-controls {
-            position: absolute;
-            left: 15px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .control-btn {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-close {
-            background-color: #ff5f56;
-        }
-
-        .btn-min {
-            background-color: #ffbd2e;
-        }
-
-        .btn-max {
-            background-color: #27c93f;
-        }
-
-        .window-content {
-            padding: 30px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
     <div class="top-bar">
         <div id="openBtn" class="menu-item">
-             Premium OS
+             Limux
         </div>
 
         <div id="timeElement" style="margin-right: 20px;">
@@ -145,99 +30,14 @@
         </div>
 
         <div class="window-content">
-            <h2 style="margin-top: 0; font-weight: 500;">Welcome to the Workspace</h2>
+            <h2 style="margin-top: 0; font-weight: 500;">Boundary Active</h2>
             <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">
-                This window is fully draggable, features a premium glassmorphic blur, and can be closed or reopened from the Top Bar.
+                Try dragging this window to the top of the screen. It will now stop perfectly beneath the top bar.
             </p>
         </div>
     </div>
 
-    <script>
-        // --- 1. CLOCK LOGIC (From Part 2) ---
-        function updateTime() {
-            var options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            var currentTime = new Date().toLocaleString('en-US', options).replace(/,/g, '');
-            document.querySelector("#timeElement").innerHTML = currentTime;
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
-
-
-        // --- 2. OPEN & CLOSE LOGIC (Your exact snippet) ---
-        const widget = document.getElementById("widget");
-
-        document.getElementById("openBtn").onclick = function () {
-            widget.style.display = "flex";
-        };
-
-        document.getElementById("closeBtn").onclick = function () {
-            widget.style.display = "none";
-        };
-
-
-        // --- 3. DRAGGING LOGIC (Your exact snippet) ---
-        makeDraggable(document.getElementById("widget"));
-
-        function makeDraggable(element) {
-            // Previous mouse position
-            let previousMouseX = 0;
-            let previousMouseY = 0;
-
-            // Mouse movement amount
-            let deltaX = 0;
-            let deltaY = 0;
-
-            // Check if a drag handle/header exists
-            let header = document.getElementById(element.id + "header");
-
-            if (header) {
-                // Drag only from header
-                header.onmousedown = startDragging;
-            } else {
-                // Drag from anywhere inside element
-                element.onmousedown = startDragging;
-            }
-
-            // Runs when mouse button is pressed
-            function startDragging(event) {
-                event.preventDefault();
-
-                // Remember mouse position at start
-                previousMouseX = event.clientX;
-                previousMouseY = event.clientY;
-
-                // Listen for dragging
-                document.onmousemove = dragElement;
-
-                // Listen for mouse release
-                document.onmouseup = stopDragging;
-            }
-
-            // Runs every time mouse moves
-            function dragElement(event) {
-                event.preventDefault();
-
-                // Calculate mouse movement
-                deltaX = event.clientX - previousMouseX;
-                deltaY = event.clientY - previousMouseY;
-
-                // Update stored mouse position
-                previousMouseX = event.clientX;
-                previousMouseY = event.clientY;
-
-                // Move element by same amount as mouse
-                element.style.left = element.offsetLeft + deltaX + "px";
-                element.style.top = element.offsetTop + deltaY + "px";
-            }
-
-            // Runs when mouse button is released
-            function stopDragging() {
-                // Remove event listeners
-                document.onmousemove = null;
-                document.onmouseup = null;
-            }
-        }
-    </script>
+    <script src="./script.js"></script>
 </body>
 
 </html>
