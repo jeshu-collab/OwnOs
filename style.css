@@ -16,9 +16,9 @@ body {
     top: 0;
     width: 100%;
     height: 40px;
-    /* Fixed height for the boundary collision math */
     display: flex;
-    justify-content: space-between;
+    /* We changed this from space-between to flex-start */
+    justify-content: flex-start;
     align-items: center;
     background-color: rgba(20, 20, 25, 0.6);
     backdrop-filter: blur(20px);
@@ -36,6 +36,20 @@ body {
     padding: 4px 10px;
     border-radius: 6px;
     transition: background-color 0.2s;
+    /* Ensures the menu stays above everything */
+    z-index: 2;
+}
+
+#timeElement {
+    position: absolute;
+    /* This breaks it out of the flexbox flow */
+    left: 50%;
+    /* Pushes it to the middle of the screen */
+    transform: translateX(-50%);
+    /* Pulls it back perfectly dead-center */
+    font-weight: bold;
+    color: #ffffff;
+    /* Removed the old margin-right */
 }
 
 .menu-item:hover {
@@ -109,6 +123,9 @@ body {
     padding: 30px;
     text-align: center;
 }
+
+
+
 
 /* ========================= */
 /* MACOS DOCK STYLES (SLIM)  */

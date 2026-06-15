@@ -5,7 +5,7 @@ function updateTime() {
     // If you don't have the top-bar anymore, you can remove this or keep it running silently
     var timeElement = document.querySelector("#timeElement");
     if (timeElement) {
-        var options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        var options = { hour: '2-digit', minute: '2-digit' };
         timeElement.innerHTML = new Date().toLocaleString('en-US', options).replace(/,/g, '');
     }
 }
