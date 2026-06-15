@@ -252,3 +252,58 @@ function processCommand(cmd) {
             break;
     }
 }
+
+// =========================
+// CALCULATOR APP ENGINE
+// =========================
+
+let calcCurrentVal = '0';
+const calcDisplay = document.getElementById('calc-display');
+
+function calcInput(val) {
+    if (!calcDisplay) return;
+
+    // Handle Clear
+    if (val === 'C') {
+        calcCurrentVal = '0';
+    }
+    // Handle Equals (Evaluate Math)
+    else if (val === '=') {
+        try {
+            // new Function is a safer, cleaner alternative to eval()
+            let result = String(new Function('return ' + calcCurrentVal)());
+
+            // Clean up long decimals (e.g., 0.1 + 0.2 math bugs)
+            if (result.includes('.') && result.length > 10) {
+                result = parseFloat(result).toFixed(6).replace(/\.?0+$/, '');
+            }
+            calcCurrentVal = result;
+        } catch (e) {
+            calcCurrentVal = 'Error';
+        }
+    }
+    // Handle typing numbers and operators
+    else {
+        // If display is just 0 or Error, replace it (unless it's an operator like + or -)
+        if (calcCurrentVal === '0' || calcCurrentVal === 'Error') {
+            if (['+', '-', '*', '/'].includes(val)) {
+                calcCurrentVal += val;
+            } else {
+                calcCurrentVal = val;
+            }
+        } else {
+            calcCurrentVal += val;
+        }
+    }
+
+    // Shrink text dynamically if the equation gets too long
+    if (calcCurrentVal.length > 12) {
+        calcDisplay.style.fontSize = '18px';
+    } else {
+        calcDisplay.style.fontSize = '28px';
+    }
+
+    // Replace the raw coding operators (* and /) with pretty math symbols for the screen
+    let displayString = calcCurrentVal.replace(/\*/g, '×').replace(/\//g, '÷');
+    calcDisplay.innerText = displayString;
+}
