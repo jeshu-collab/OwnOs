@@ -36,9 +36,80 @@
             </p>
         </div>
     </div>
+    <div id="about-app" class="window dev-window" style="display: none; top: 15%; left: 20%; width: 550px;">
+
+        <div id="about-appheader" class="window-header dev-header">
+            <div class="window-title dev-title">About Me</div>
+            <div class="dev-controls">
+                <button class="dev-btn-min">_</button>
+                <button class="dev-btn-max">□</button>
+                <button onclick="closeApp('about-app')" class="dev-btn-close">×</button>
+            </div>
+        </div>
+
+        <div class="window-content dev-content">
+
+            <div class="dev-row">
+                <img src="./Post by @iconsgallery · 9 images.jpg" alt="Profile Picture" class="dev-avatar">
+                <p class="dev-paragraph">
+                    Hi, I'm Jaswanth, a B.Tech student passionate about technology, web development, and AI. I enjoy building projects, learning new skills, and experimenting with creative ideas.
+                    OwnOS is one of my personal projects, created to bring a modern desktop experience to the web.
+                </p>
+            </div>
+
+            <div class="dev-links">
+                <div class="dev-email-container">
+                    <span style="color: #888;">Email:</span>
+                    <span style="color: #58a6ff; font-family: monospace; font-size: 14px;">jeshu241125@gmail.com</span>
+                </div>
+
+                <a href="https://github.com/jeshu-collab" target="_blank" class="dev-github-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    View GitHub
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="desktop-widget sys-monitor">
+        <div class="sys-header">SYSTEM_MONITOR</div>
+
+        <div class="sys-time" id="sys-time">00:00:00</div>
+        <div class="sys-date" id="sys-date">XXX 00, 0000</div>
+
+        <div class="sys-metrics">
+            <div class="metric">
+                <div class="metric-label">CPU_USAGE <span id="cpu-val" style="color: #ffbd2e;">24%</span></div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill cpu-fill" id="cpu-bar" style="width: 24%;"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">MEM_ALLOC <span id="ram-val" style="color: #58a6ff;">4.2GB</span></div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill ram-fill" id="ram-bar" style="width: 45%;"></div>
+                </div>
+            </div>
+
+            <div class="metric" style="margin-top: 15px;">
+                <div class="metric-label">NET_UPLINK <span style="color: #2ea043;">[ESTABLISHED]</span></div>
+            </div>
+        </div>
+    </div>
 
     <nav class="mac-dock">
         <div class="dock-container">
+
+            <button class="dock-item" onclick="toggleApp('about-app')">
+                <img src="https://api.iconify.design/flat-color-icons:code.svg" alt="About Me">
+                <span class="dock-tooltip">About Me</span>
+            </button>
+
             <button class="dock-item" onclick="toggleApp('browser-app')">
                 <img src="https://api.iconify.design/logos:safari.svg" alt="Browser">
                 <span class="dock-tooltip">Browser</span>
@@ -63,10 +134,16 @@
                 <img src="https://api.iconify.design/flat-color-icons:command-line.svg" alt="Terminal">
                 <span class="dock-tooltip">Terminal</span>
             </button>
+
         </div>
     </nav>
 
     <script src="./script.js"></script>
+</body>
+
+</html>
+
+<script src="./script.js"></script>
 </body>
 
 </html>

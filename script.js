@@ -1,79 +1,103 @@
-// --- 1. CLOCK LOGIC ---
+// =========================
+// CLOCK SYSTEM (From Part 2)
+// =========================
 function updateTime() {
-    var options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    var currentTime = new Date().toLocaleString('en-US', options).replace(/,/g, '');
-    document.querySelector("#timeElement").innerHTML = currentTime;
+    // If you don't have the top-bar anymore, you can remove this or keep it running silently
+    var timeElement = document.querySelector("#timeElement");
+    if (timeElement) {
+        var options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        timeElement.innerHTML = new Date().toLocaleString('en-US', options).replace(/,/g, '');
+    }
 }
 setInterval(updateTime, 1000);
 updateTime();
 
-// --- 2. OPEN & CLOSE LOGIC ---
-const widget = document.getElementById("widget");
+// =========================
+// Z-INDEX SYSTEM (Part 4)
+// =========================
+let highestZIndex = 1;
 
-document.getElementById("openBtn").onclick = function () {
-    widget.style.display = "flex";
-};
+function bringToFront(windowElement) {
+    highestZIndex++;
+    windowElement.style.zIndex = highestZIndex;
+}
 
-document.getElementById("closeBtn").onclick = function () {
-    widget.style.display = "none";
-};
+// =========================
+// OPEN / CLOSE APP (Part 4)
+// =========================
+function toggleApp(id) {
+    const app = document.getElementById(id);
+    if (!app) return; // Failsafe if app doesn't exist yet
 
-// --- 3. BOUNDARY-AWARE DRAGGING LOGIC ---
-makeDraggable(document.getElementById("widget"));
-
-function makeDraggable(element) {
-    let previousMouseX = 0;
-    let previousMouseY = 0;
-    let deltaX = 0;
-    let deltaY = 0;
-
-    let header = document.getElementById(element.id + "header");
-
-    if (header) {
-        header.onmousedown = startDragging;
+    if (app.style.display === "flex") {
+        app.style.display = "none";
     } else {
-        element.onmousedown = startDragging;
+        app.style.display = "flex";
+        bringToFront(app);
+    }
+}
+
+function closeApp(id) {
+    document.getElementById(id).style.display = "none";
+}
+
+// =========================
+// DRAGGABLE WINDOWS (With Boundary Math)
+// =========================
+function makeDraggable(windowElement) {
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const header = windowElement.querySelector(".window-header");
+    if (!header) return;
+
+    header.onmousedown = startDrag;
+
+    function startDrag(event) {
+        event.preventDefault();
+        bringToFront(windowElement);
+
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+
+        document.onmousemove = drag;
+        document.onmouseup = stopDrag;
     }
 
-    function startDragging(event) {
-        event.preventDefault();
-        previousMouseX = event.clientX;
-        previousMouseY = event.clientY;
-        document.onmousemove = dragElement;
-        document.onmouseup = stopDragging;
-    }
-
-    function dragElement(event) {
+    function drag(event) {
         event.preventDefault();
 
-        deltaX = event.clientX - previousMouseX;
-        deltaY = event.clientY - previousMouseY;
-        previousMouseX = event.clientX;
-        previousMouseY = event.clientY;
+        let dx = event.clientX - mouseX;
+        let dy = event.clientY - mouseY;
 
-        // Calculate where the window WANTS to go
-        let newTop = element.offsetTop + deltaY;
-        let newLeft = element.offsetLeft + deltaX;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
 
-        // --- THE BOUNDARY COLLISION MATH ---
-        // 1. Find the top bar element
-        const topBar = document.querySelector('.top-bar');
+        let newTop = windowElement.offsetTop + dy;
+        let newLeft = windowElement.offsetLeft + dx;
 
-        // 2. Get its exact height (it will be 40px based on our CSS)
-        const topBoundary = topBar ? topBar.offsetHeight : 0;
-
-        // 3. If the window tries to go higher than the boundary, lock it to the boundary
+        // BOUNDARY COLLISION MATH: Prevent window from going above the screen
+        const topBoundary = 0; // Set to 40 if you add a top-bar back
         if (newTop < topBoundary) {
             newTop = topBoundary;
         }
 
-        // Apply the approved coordinates to the window
-        element.style.left = newLeft + "px";
-        element.style.top = newTop + "px";
+        windowElement.style.left = newLeft + "px";
+        windowElement.style.top = newTop + "px";
     }
 
-    function stopDragging() {
+    function stopDrag() {
         document.onmousemove = null;
         document.onmouseup = null;
     }
 }
+
+// =========================
+// AUTO SETUP ALL WINDOWS
+// =========================
+document.querySelectorAll(".window").forEach(windowElement => {
+    makeDraggable(windowElement);
+
+    // Bring window to front when clicked anywhere inside it
+    windowElement.addEventListener("mousedown", () => bringToFront(windowElement));
+});
