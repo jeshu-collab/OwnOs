@@ -71,7 +71,30 @@
             </div>
         </div>
     </div>
+    <div id="terminal-app" class="window dev-window" style="display: none; top: 20%; left: 25%; width: 550px; height: 380px;">
 
+        <div id="terminal-appheader" class="window-header dev-header">
+            <div class="window-title dev-title">jaswanth@limux: ~</div>
+            <div class="dev-controls">
+                <button class="dev-btn-min">_</button>
+                <button class="dev-btn-max">□</button>
+                <button onclick="closeApp('terminal-app')" class="dev-btn-close">×</button>
+            </div>
+        </div>
+
+        <div class="window-content term-content" id="term-container">
+            <div id="term-output">
+                <div>Limux OS v1.0.0 (tty1)</div>
+                <div>Type 'help' to see available commands.</div>
+                <br>
+            </div>
+
+            <div class="term-input-line">
+                <span class="term-prompt">jaswanth@limux:~$</span>
+                <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
+            </div>
+        </div>
+    </div>
     <div class="desktop-widget calendar-widget">
         <div class="cal-header">
             <button id="prev-month" class="cal-nav-btn">&lt;</button>

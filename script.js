@@ -166,3 +166,89 @@ document.getElementById("next-month").addEventListener("click", () => {
 
 // Run once on load
 renderCalendar();
+
+// =========================
+// TERMINAL APP ENGINE
+// =========================
+
+const termInput = document.getElementById("term-input");
+const termOutput = document.getElementById("term-output");
+const termContainer = document.getElementById("term-container");
+
+// If the user clicks anywhere in the terminal, refocus the typing cursor
+if (termContainer) {
+    termContainer.addEventListener("click", () => {
+        termInput.focus();
+    });
+}
+
+if (termInput) {
+    termInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            const command = termInput.value.trim();
+
+            // 1. Print the command the user just typed
+            printLine(`<span style="color: #87af5f; font-weight: bold;">jaswanth@limux:~$</span> ${command}`);
+
+            // 2. Process the command
+            processCommand(command);
+
+            // 3. Clear the input box and scroll to the bottom
+            termInput.value = "";
+            termContainer.scrollTop = termContainer.scrollHeight;
+        }
+    });
+}
+
+// Function to print a new line to the terminal
+function printLine(html) {
+    const newLine = document.createElement("div");
+    newLine.innerHTML = html;
+    newLine.style.marginBottom = "4px";
+    termOutput.appendChild(newLine);
+}
+
+// Function that handles the actual logic of the commands
+function processCommand(cmd) {
+    if (cmd === "") return; // Do nothing if they just press enter
+
+    const args = cmd.split(" ");
+    const baseCmd = args[0].toLowerCase();
+
+    switch (baseCmd) {
+        case "help":
+            printLine("Available commands:");
+            printLine("  <span style='color:#58a6ff'>help</span>    - Show this message");
+            printLine("  <span style='color:#58a6ff'>whoami</span>  - Display current user");
+            printLine("  <span style='color:#58a6ff'>date</span>    - Show current system date/time");
+            printLine("  <span style='color:#58a6ff'>echo</span>    - Print text to the terminal");
+            printLine("  <span style='color:#58a6ff'>clear</span>   - Clear the terminal output");
+            break;
+
+        case "whoami":
+            printLine("jaswanth - System Admin & Developer");
+            break;
+
+        case "date":
+            printLine(new Date().toString());
+            break;
+
+        case "echo":
+            // Print everything after the word "echo"
+            const textToEcho = args.slice(1).join(" ");
+            printLine(textToEcho);
+            break;
+
+        case "clear":
+            termOutput.innerHTML = "";
+            break;
+
+        case "sudo":
+            printLine("nice try. this incident will be reported.");
+            break;
+
+        default:
+            printLine(`bash: ${baseCmd}: command not found`);
+            break;
+    }
+}

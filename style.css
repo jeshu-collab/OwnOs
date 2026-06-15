@@ -441,3 +441,67 @@ body {
     color: transparent;
     pointer-events: none;
 }
+
+/* ========================= */
+/* TERMINAL APP STYLES       */
+/* ========================= */
+
+.term-content {
+    background-color: #0c0c0c;
+    height: 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #cccccc;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+#term-output {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.term-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.term-prompt {
+    color: #87af5f;
+    /* Classic terminal green */
+    font-weight: bold;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+#term-input {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    flex: 1;
+    outline: none;
+    /* Removes the blue glow when typing */
+}
+
+/* Custom scrollbar for the terminal */
+.term-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.term-content::-webkit-scrollbar-track {
+    background: #0c0c0c;
+}
+
+.term-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
