@@ -19,7 +19,6 @@
     </div>
 
     <div id="widget" class="window">
-
         <div id="widgetheader" class="window-header">
             <div class="window-controls">
                 <button id="closeBtn" class="control-btn btn-close"></button>
@@ -36,8 +35,8 @@
             </p>
         </div>
     </div>
-    <div id="about-app" class="window dev-window" style="display: none; top: 15%; left: 20%; width: 550px;">
 
+    <div id="about-app" class="window dev-window" style="display: none; top: 15%; left: 20%; width: 450px;">
         <div id="about-appheader" class="window-header dev-header">
             <div class="window-title dev-title">About Me</div>
             <div class="dev-controls">
@@ -48,7 +47,6 @@
         </div>
 
         <div class="window-content dev-content">
-
             <div class="dev-row">
                 <img src="./Post by @iconsgallery · 9 images.jpg" alt="Profile Picture" class="dev-avatar">
                 <p class="dev-paragraph">
@@ -71,35 +69,21 @@
                     View GitHub
                 </a>
             </div>
-
         </div>
     </div>
 
-    <div class="desktop-widget sys-monitor">
-        <div class="sys-header">SYSTEM_MONITOR</div>
-
-        <div class="sys-time" id="sys-time">00:00:00</div>
-        <div class="sys-date" id="sys-date">XXX 00, 0000</div>
-
-        <div class="sys-metrics">
-            <div class="metric">
-                <div class="metric-label">CPU_USAGE <span id="cpu-val" style="color: #ffbd2e;">24%</span></div>
-                <div class="metric-bar-bg">
-                    <div class="metric-bar-fill cpu-fill" id="cpu-bar" style="width: 24%;"></div>
-                </div>
-            </div>
-
-            <div class="metric">
-                <div class="metric-label">MEM_ALLOC <span id="ram-val" style="color: #58a6ff;">4.2GB</span></div>
-                <div class="metric-bar-bg">
-                    <div class="metric-bar-fill ram-fill" id="ram-bar" style="width: 45%;"></div>
-                </div>
-            </div>
-
-            <div class="metric" style="margin-top: 15px;">
-                <div class="metric-label">NET_UPLINK <span style="color: #2ea043;">[ESTABLISHED]</span></div>
-            </div>
+    <div class="desktop-widget calendar-widget">
+        <div class="cal-header">
+            <button id="prev-month" class="cal-nav-btn">&lt;</button>
+            <span id="cal-month-year">MONTH 0000</span>
+            <button id="next-month" class="cal-nav-btn">&gt;</button>
         </div>
+
+        <div class="cal-weekdays">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+
+        <div class="cal-days" id="cal-days"></div>
     </div>
 
     <nav class="mac-dock">
@@ -139,11 +123,6 @@
     </nav>
 
     <script src="./script.js"></script>
-</body>
-
-</html>
-
-<script src="./script.js"></script>
 </body>
 
 </html>

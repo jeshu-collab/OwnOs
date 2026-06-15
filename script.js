@@ -101,3 +101,68 @@ document.querySelectorAll(".window").forEach(windowElement => {
     // Bring window to front when clicked anywhere inside it
     windowElement.addEventListener("mousedown", () => bringToFront(windowElement));
 });
+
+// =========================
+// CALENDAR WIDGET ENGINE
+// =========================
+// =========================
+// CALENDAR WIDGET ENGINE
+// =========================
+let navDate = new Date(); // Tracks the month you are currently looking at
+
+function renderCalendar() {
+    const year = navDate.getFullYear();
+    const month = navDate.getMonth();
+
+    // We keep a separate variable for "today" so the pink highlight stays accurate
+    const realToday = new Date();
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthHeader = document.getElementById("cal-month-year");
+    if (monthHeader) {
+        monthHeader.innerText = `${monthNames[month]} ${year}`;
+    }
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const daysContainer = document.getElementById("cal-days");
+    if (!daysContainer) return;
+
+    daysContainer.innerHTML = "";
+
+    // Empty slots
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "cal-day empty";
+        daysContainer.appendChild(emptyDiv);
+    }
+
+    // Numbered days
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "cal-day";
+        dayDiv.innerText = i;
+
+        // Only highlight if it's the real current day, month, AND year
+        if (i === realToday.getDate() && month === realToday.getMonth() && year === realToday.getFullYear()) {
+            dayDiv.classList.add("current");
+        }
+
+        daysContainer.appendChild(dayDiv);
+    }
+}
+
+// Attach click events to the navigation arrows
+document.getElementById("prev-month").addEventListener("click", () => {
+    navDate.setMonth(navDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById("next-month").addEventListener("click", () => {
+    navDate.setMonth(navDate.getMonth() + 1);
+    renderCalendar();
+});
+
+// Run once on load
+renderCalendar();
