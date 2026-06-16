@@ -23,24 +23,42 @@ function bringToFront(windowElement) {
 }
 
 // =========================
-// OPEN / CLOSE APP (Part 4)
+// OPEN / CLOSE APP (ANIMATED)
 // =========================
 function toggleApp(id) {
     const app = document.getElementById(id);
-    if (!app) return; // Failsafe if app doesn't exist yet
+    if (!app) return;
 
-    if (app.style.display === "flex") {
-        app.style.display = "none";
+    // If it's already open, run the close sequence
+    if (app.classList.contains("is-open")) {
+        closeApp(id);
     } else {
+        // 1. Make it physically exist on screen (but invisible because opacity is 0)
         app.style.display = "flex";
         bringToFront(app);
+
+        // 2. Wait 10 milliseconds, then trigger the spring pop-up animation
+        setTimeout(() => {
+            app.classList.add("is-open");
+        }, 10);
     }
 }
 
 function closeApp(id) {
-    document.getElementById(id).style.display = "none";
-}
+    const app = document.getElementById(id);
+    if (!app) return;
 
+    // 1. Remove the open class to trigger the shrink/fade-out animation
+    app.classList.remove("is-open");
+
+    // 2. Wait exactly 250ms for the CSS animation to finish before removing it from the layout
+    setTimeout(() => {
+        // Failsafe: only hide it if the user didn't instantly try to reopen it
+        if (!app.classList.contains("is-open")) {
+            app.style.display = "none";
+        }
+    }, 250);
+}
 // =========================
 // DRAGGABLE WINDOWS (With Boundary Math)
 // =========================
