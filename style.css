@@ -592,86 +592,110 @@ body {
 }
 
 /* ========================= */
-/* CALCULATOR APP STYLES     */
+/* CALCULATOR UI REDESIGN    */
 /* ========================= */
 
-.calc-content {
-    padding: 20px;
-    background-color: #1e1e1e;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+/* 1. Make the outer window glassy and seamless */
+#calc-app.dev-window {
+    background-color: rgba(30, 30, 35, 0.6) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* The Calculator Screen */
+/* Hide the top header background so the glass flows all the way to the top */
+#calc-app .dev-header {
+    background: transparent !important;
+    border-bottom: none !important;
+}
+
+/* 2. Strip the old solid black backgrounds */
+.calc-content {
+    padding: 0 20px 20px 20px;
+    background-color: transparent;
+}
+
+/* 3. The sleek new display screen */
 .calc-display {
-    background-color: #0c0c0c;
+    background-color: transparent;
     color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 48px;
+    /* Massive, clean font */
+    font-weight: 300;
     text-align: right;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    border: 1px solid #333;
+    padding: 10px 5px 20px 5px;
+    border: none;
+    box-shadow: none;
     overflow: hidden;
     white-space: nowrap;
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* 4-Column Grid layout */
+/* 4. The Grid & Perfect Circle Buttons */
 .calc-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    gap: 12px;
+    /* Gives the buttons nice breathing room */
 }
 
-/* Base Button Styles */
 .calc-btn {
-    background-color: #2d2d2d;
-    border: 1px solid #444;
-    color: #dcdcdc;
-    font-size: 18px;
-    padding: 15px 0;
-    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 400;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: all 0.15s ease;
+    aspect-ratio: 1 / 1;
+    /* Magic trick: forces the buttons into perfect circles */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* Remove the circle constraint from the '0' button so it stretches into a wide pill */
+.calc-btn[onclick="calcInput('0')"] {
+    aspect-ratio: auto;
+    justify-content: flex-start;
+    padding-left: 25px;
+    /* Pushes the '0' text to the left side of the pill */
+}
+
+/* 5. Hover and Click Animations */
 .calc-btn:hover {
-    background-color: #3d3d3d;
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
-/* The satisfying click push-down effect */
 .calc-btn:active {
-    transform: scale(0.95);
-    background-color: #555;
+    transform: scale(0.85);
+    /* Slightly deeper push-down effect */
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Color Coding */
-.calc-op {
-    background-color: #252526;
-    color: #58a6ff;
-    /* Developer Blue */
-    font-weight: bold;
-}
-
-.calc-clear {
-    color: #ff5f56;
-    /* Red */
-    font-weight: bold;
-}
-
+/* 6. Color Highlighting (iOS Vibrant Orange) */
+.calc-op,
 .calc-equals {
-    background-color: #2ea043;
-    /* Green */
+    background-color: #ff9f0a;
     color: #ffffff;
-    border-color: #2ea043;
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 26px;
 }
 
+.calc-op:hover,
 .calc-equals:hover {
-    background-color: #2c974b;
+    background-color: #ffb340;
+}
+
+/* Make the top row functional buttons slightly lighter grey */
+.calc-clear,
+.calc-btn:nth-child(2),
+.calc-btn:nth-child(3) {
+    background-color: rgba(170, 170, 170, 0.3);
+    color: #ffffff;
 }
 
 /* ========================= */
@@ -779,4 +803,171 @@ body {
 
 .dropdown-git:hover {
     color: #3fb950;
+}
+
+
+/* ========================= */
+/* FULL VERTICAL MUSIC APP   */
+/* ========================= */
+
+#music-app.dev-window {
+    background-color: #e9ecec !important;
+    /* The light off-white from your screenshot */
+    backdrop-filter: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 28px !important;
+    /* Soft, pill-like rounded corners */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.vertical-music-content {
+    padding: 10px 25px 30px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Album Art Frame */
+.vertical-artwork-frame {
+    width: 260px;
+    height: 260px;
+    border-radius: 8px;
+    padding: 4px;
+    background-color: #1a1a1a;
+    /* Dark border mimicking the screenshot */
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+#music-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Track Text */
+.vertical-music-info {
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.vertical-music-info h3 {
+    margin: 0 0 4px 0;
+    color: #2b332d;
+    /* Very dark green/grey */
+    font-size: 22px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.vertical-music-info p {
+    margin: 0;
+    color: #6a756d;
+    /* Muted text */
+    font-size: 14px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* --- Wavy Progress Bar --- */
+.vertical-progress-wrapper {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.wave-slider-container {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.wave-track-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M0,10 Q5,0 10,10 T20,10" fill="none" stroke="%23a0aba4" stroke-width="2"/></svg>');
+    background-repeat: repeat-x;
+    background-position: 0 center;
+}
+
+.wave-track-fill {
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M0,10 Q5,0 10,10 T20,10" fill="none" stroke="%231d3e2c" stroke-width="2.5"/></svg>');
+    background-repeat: repeat-x;
+    background-position: 0 center;
+}
+
+/* The Invisible Input with the Diamond Knob */
+#music-slider {
+    position: relative;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    outline: none;
+    z-index: 2;
+    margin: 0;
+}
+
+#music-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    background: #1d3e2c;
+    /* Dark green diamond */
+    cursor: pointer;
+    transform: rotate(45deg);
+}
+
+/* Timestamps under the wave */
+.vertical-timestamps {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6a756d;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* --- Flat Playback Controls --- */
+.vertical-music-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    width: 100%;
+}
+
+.vertical-btn {
+    background: transparent;
+    border: none;
+    color: #1a1a1a;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+}
+
+.vertical-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.vertical-btn:active {
+    transform: scale(0.85);
+}
+
+.play-btn svg {
+    width: 32px;
+    height: 32px;
 }

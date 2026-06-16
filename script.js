@@ -348,3 +348,122 @@ function updateTopBar() {
 // Run immediately and update every 1 second
 updateTopBar();
 setInterval(updateTopBar, 1000);
+
+// =========================
+// MUSIC PLAYER ENGINE (Wave Update)
+// =========================
+
+let isMusicPlaying = false;
+let currentTrackIndex = 0;
+let musicProgressVal = 0;
+let musicInterval;
+
+const playlist = [
+    {
+        title: "Deep Fried",
+        artist: "Aves",
+        cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
+        duration: "02:12"
+    },
+    {
+        title: "Neon Horizon",
+        artist: "Synthwave Architect",
+        cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=500&auto=format&fit=crop",
+        duration: "03:45"
+    }
+];
+
+function loadTrack(index) {
+    const track = playlist[index];
+
+    // Inject Data into the new Mini Header
+    const miniHeader = document.getElementById("mini-track-info");
+    if (miniHeader) {
+        // Formats it like "Deep Fried - Aves"
+        miniHeader.innerText = `${track.title} - ${track.artist}`;
+    }
+
+    // Reset Progress Elements
+    musicProgressVal = 0;
+    const slider = document.getElementById("music-slider");
+
+    if (slider) slider.value = 0;
+}
+
+function togglePlay() {
+    const playIcon = document.getElementById('play-icon');
+    const slider = document.getElementById('music-slider');
+    const waveFill = document.getElementById('wave-fill');
+    const currentTimeEl = document.getElementById('time-current');
+
+    // THE FIX: Always kill the timer first to prevent runaway orphaned intervals
+    clearInterval(musicInterval);
+
+    isMusicPlaying = !isMusicPlaying;
+
+    if (isMusicPlaying) {
+        // Change SVG to Pause
+        if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+
+        musicInterval = setInterval(() => {
+            musicProgressVal += 0.5;
+
+            if (musicProgressVal > 100) {
+                nextTrack(); // Auto-skip when track is done
+            } else {
+                // Update the diamond and the green wave width
+                if (slider) slider.value = musicProgressVal;
+                if (waveFill) waveFill.style.width = musicProgressVal + '%';
+
+                // Update the timer text
+                let seconds = Math.floor((musicProgressVal / 100) * 132);
+                let m = Math.floor(seconds / 60);
+                let s = seconds % 60;
+                if (currentTimeEl) currentTimeEl.innerText = `0${m}:${s < 10 ? '0' + s : s}`;
+            }
+        }, 1000);
+    } else {
+        // Change SVG back to Play
+        if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
+    }
+}
+
+function nextTrack() {
+    currentTrackIndex++;
+    if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+    loadTrack(currentTrackIndex);
+    if (isMusicPlaying) {
+        isMusicPlaying = false;
+        togglePlay();
+    }
+}
+
+function prevTrack() {
+    currentTrackIndex--;
+    if (currentTrackIndex < 0) currentTrackIndex = playlist.length - 1;
+    loadTrack(currentTrackIndex);
+    if (isMusicPlaying) {
+        isMusicPlaying = false;
+        togglePlay();
+    }
+}
+
+// Allow user to drag the diamond and update the wave width manually!
+const sliderEl = document.getElementById('music-slider');
+if (sliderEl) {
+    sliderEl.addEventListener('input', function (e) {
+        musicProgressVal = parseFloat(e.target.value);
+        const waveFill = document.getElementById("wave-fill");
+        if (waveFill) waveFill.style.width = musicProgressVal + '%';
+
+        // Update mock time while dragging
+        const currentTimeEl = document.getElementById('time-current');
+        let seconds = Math.floor((musicProgressVal / 100) * 132);
+        let m = Math.floor(seconds / 60);
+        let s = seconds % 60;
+        if (currentTimeEl) currentTimeEl.innerText = `0${m}:${s < 10 ? '0' + s : s}`;
+    });
+}
+
+// Initialize on boot
+loadTrack(currentTrackIndex);
