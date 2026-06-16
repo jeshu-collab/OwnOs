@@ -350,80 +350,159 @@ updateTopBar();
 setInterval(updateTopBar, 1000);
 
 // =========================
-// MUSIC PLAYER ENGINE (Wave Update)
+// REAL HTML5 AUDIO ENGINE (Local Only)
 // =========================
 
 let isMusicPlaying = false;
 let currentTrackIndex = 0;
-let musicProgressVal = 0;
-let musicInterval;
 
+// Initialize the native Audio object
+const currentAudio = new Audio();
+
+// Your 9-Track Local Playlist
 const playlist = [
     {
-        title: "Deep Fried",
-        artist: "Aves",
+        title: "Track 1 Name",
+        artist: "Artist 1",
         cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
-        duration: "02:12"
+        src: "./songs/song1.mp3",
+        duration: "03:00"
     },
     {
-        title: "Neon Horizon",
-        artist: "Synthwave Architect",
+        title: "Track 2 Name",
+        artist: "Artist 2",
         cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=500&auto=format&fit=crop",
-        duration: "03:45"
+        src: "./songs/song2.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 3 Name",
+        artist: "Artist 3",
+        cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song3.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 4 Name",
+        artist: "Artist 4",
+        cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song4.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 5 Name",
+        artist: "Artist 5",
+        cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song5.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 6 Name",
+        artist: "Artist 6",
+        cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song6.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 7 Name",
+        artist: "Artist 7",
+        cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song7.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 8 Name",
+        artist: "Artist 8",
+        cover: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song8.mp3",
+        duration: "03:00"
+    },
+    {
+        title: "Track 9 Name",
+        artist: "Artist 9",
+        cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop",
+        src: "./songs/song9.mp3",
+        duration: "03:00"
     }
 ];
 
 function loadTrack(index) {
     const track = playlist[index];
 
-    // Inject Data into the new Mini Header
-    const miniHeader = document.getElementById("mini-track-info");
-    if (miniHeader) {
-        // Formats it like "Deep Fried - Aves"
-        miniHeader.innerText = `${track.title} - ${track.artist}`;
+    // Inject Text Data
+    const titleEl = document.getElementById("music-title");
+    const artistEl = document.getElementById("music-artist");
+    const totalTimeEl = document.getElementById("time-total");
+
+    if (titleEl) titleEl.innerText = track.title;
+    if (artistEl) artistEl.innerText = track.artist;
+    if (totalTimeEl) totalTimeEl.innerText = track.duration;
+
+    // Load the actual audio file
+    currentAudio.src = track.src;
+    currentAudio.load();
+
+    // THE FIX: Instantly update the cover art to the array image so it never freezes
+    const coverEl = document.getElementById("music-cover");
+    if (coverEl) coverEl.src = track.cover;
+
+    // Try to find an embedded MP3 cover in the background without lagging the app
+    if (window.jsmediatags) {
+        window.jsmediatags.read(track.src, {
+            onSuccess: function (tag) {
+                const picture = tag.tags.picture;
+                if (picture) {
+                    let base64String = "";
+                    for (let i = 0; i < picture.data.length; i++) {
+                        base64String += String.fromCharCode(picture.data[i]);
+                    }
+                    const imageUrl = `data:${picture.format};base64,${window.btoa(base64String)}`;
+                    if (coverEl) coverEl.src = imageUrl; // Overwrite if a real cover is found
+                }
+            },
+            onError: function (error) {
+                console.log('Using default cover art.');
+            }
+        });
     }
 
-    // Reset Progress Elements
-    musicProgressVal = 0;
+    // Reset Progress UI
     const slider = document.getElementById("music-slider");
+    const waveFill = document.getElementById("wave-fill");
+    const currentTimeEl = document.getElementById("time-current");
 
     if (slider) slider.value = 0;
+    if (waveFill) waveFill.style.width = "0%";
+    if (currentTimeEl) currentTimeEl.innerText = "00:00";
+}
+
+// THE FIX: Bulletproof function to handle audio promises
+function playSafe() {
+    let playPromise = currentAudio.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            isMusicPlaying = true;
+            const playIcon = document.getElementById('play-icon');
+            // THE FIX: Solid, visible Pause SVG
+            if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        }).catch(error => {
+            console.log("Playback interrupted or file missing:", error);
+            isMusicPlaying = false;
+            const playIcon = document.getElementById('play-icon');
+            if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
+        });
+    }
 }
 
 function togglePlay() {
-    const playIcon = document.getElementById('play-icon');
-    const slider = document.getElementById('music-slider');
-    const waveFill = document.getElementById('wave-fill');
-    const currentTimeEl = document.getElementById('time-current');
-
-    // THE FIX: Always kill the timer first to prevent runaway orphaned intervals
-    clearInterval(musicInterval);
-
-    isMusicPlaying = !isMusicPlaying;
-
-    if (isMusicPlaying) {
-        // Change SVG to Pause
-        if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-
-        musicInterval = setInterval(() => {
-            musicProgressVal += 0.5;
-
-            if (musicProgressVal > 100) {
-                nextTrack(); // Auto-skip when track is done
-            } else {
-                // Update the diamond and the green wave width
-                if (slider) slider.value = musicProgressVal;
-                if (waveFill) waveFill.style.width = musicProgressVal + '%';
-
-                // Update the timer text
-                let seconds = Math.floor((musicProgressVal / 100) * 132);
-                let m = Math.floor(seconds / 60);
-                let s = seconds % 60;
-                if (currentTimeEl) currentTimeEl.innerText = `0${m}:${s < 10 ? '0' + s : s}`;
-            }
-        }, 1000);
+    if (currentAudio.paused) {
+        playSafe();
     } else {
-        // Change SVG back to Play
+        currentAudio.pause();
+        isMusicPlaying = false;
+        const playIcon = document.getElementById('play-icon');
+        // Revert to Play SVG
         if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
     }
 }
@@ -432,9 +511,9 @@ function nextTrack() {
     currentTrackIndex++;
     if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
     loadTrack(currentTrackIndex);
+
     if (isMusicPlaying) {
-        isMusicPlaying = false;
-        togglePlay();
+        setTimeout(() => { playSafe(); }, 50); // Small delay lets the browser fetch the new file
     }
 }
 
@@ -442,26 +521,46 @@ function prevTrack() {
     currentTrackIndex--;
     if (currentTrackIndex < 0) currentTrackIndex = playlist.length - 1;
     loadTrack(currentTrackIndex);
+
     if (isMusicPlaying) {
-        isMusicPlaying = false;
-        togglePlay();
+        setTimeout(() => { playSafe(); }, 50);
     }
 }
 
-// Allow user to drag the diamond and update the wave width manually!
+// Automatically update the slider as the real song plays
+currentAudio.addEventListener('timeupdate', () => {
+    if (!isNaN(currentAudio.duration)) {
+        const progressPercent = (currentAudio.currentTime / currentAudio.duration) * 100;
+
+        const slider = document.getElementById('music-slider');
+        const waveFill = document.getElementById("wave-fill");
+        const currentTimeEl = document.getElementById("time-current");
+
+        if (slider) slider.value = progressPercent;
+        if (waveFill) waveFill.style.width = progressPercent + '%';
+
+        // Format real timestamps (e.g., 01:24)
+        let currentMins = Math.floor(currentAudio.currentTime / 60);
+        let currentSecs = Math.floor(currentAudio.currentTime % 60);
+        if (currentTimeEl) {
+            currentTimeEl.innerText = `0${currentMins}:${currentSecs < 10 ? '0' + currentSecs : currentSecs}`;
+        }
+    }
+});
+
+// Auto-play the next song when the current one finishes
+currentAudio.addEventListener('ended', () => {
+    nextTrack();
+});
+
+// Allow user to click/drag the slider to skip around in the song
 const sliderEl = document.getElementById('music-slider');
 if (sliderEl) {
     sliderEl.addEventListener('input', function (e) {
-        musicProgressVal = parseFloat(e.target.value);
-        const waveFill = document.getElementById("wave-fill");
-        if (waveFill) waveFill.style.width = musicProgressVal + '%';
-
-        // Update mock time while dragging
-        const currentTimeEl = document.getElementById('time-current');
-        let seconds = Math.floor((musicProgressVal / 100) * 132);
-        let m = Math.floor(seconds / 60);
-        let s = seconds % 60;
-        if (currentTimeEl) currentTimeEl.innerText = `0${m}:${s < 10 ? '0' + s : s}`;
+        if (!isNaN(currentAudio.duration)) {
+            const seekTime = (e.target.value / 100) * currentAudio.duration;
+            currentAudio.currentTime = seekTime;
+        }
     });
 }
 
