@@ -307,3 +307,26 @@ function calcInput(val) {
     let displayString = calcCurrentVal.replace(/\*/g, '×').replace(/\//g, '÷');
     calcDisplay.innerText = displayString;
 }
+
+// =========================
+// TOP BAR CLOCK & DATE ENGINE
+// =========================
+function updateTopBar() {
+    const now = new Date();
+
+    // 1. Update the Centered Time (e.g., "10:30 AM")
+    const timeElement = document.getElementById("timeElement");
+    if (timeElement) {
+        timeElement.innerText = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    // 2. Update the Right-Side Hover Button (e.g., "Tue, Jun 16")
+    const dateTrigger = document.getElementById("date-trigger");
+    if (dateTrigger) {
+        dateTrigger.innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+}
+
+// Run immediately and update every 1 second
+updateTopBar();
+setInterval(updateTopBar, 1000);

@@ -9,12 +9,40 @@
 <body>
 
     <div class="top-bar">
-        <div id="openBtn" class="menu-item">
-            About Me
+
+        <div class="top-bar-side">
+            <div id="openBtn" class="menu-item">
+                 Limux
+            </div>
         </div>
 
-        <div id="timeElement" style="margin-right: 20px;">
-            Loading...
+        <div id="timeElement" class="top-bar-center">
+            00:00
+        </div>
+
+        <div class="top-bar-side" style="justify-content: flex-end; padding-right: 15px;">
+
+            <div class="calendar-wrapper">
+
+                <div id="date-trigger" class="menu-item">
+                    Calendar
+                </div>
+
+                <div class="desktop-widget calendar-widget">
+                    <div class="cal-header">
+                        <button id="prev-month" class="cal-nav-btn">&lt;</button>
+                        <span id="cal-month-year">MONTH 0000</span>
+                        <button id="next-month" class="cal-nav-btn">&gt;</button>
+                    </div>
+
+                    <div class="cal-weekdays">
+                        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                    </div>
+
+                    <div class="cal-days" id="cal-days"></div>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -74,7 +102,7 @@
     <div id="terminal-app" class="window dev-window" style="display: none; top: 20%; left: 25%; width: 550px; height: 380px;">
 
         <div id="terminal-appheader" class="window-header dev-header">
-            <div class="window-title dev-title">jaswanth@limux: ~</div>
+            <div class="window-title dev-title">jeshu@limux: ~</div>
             <div class="dev-controls">
                 <button class="dev-btn-min">_</button>
                 <button class="dev-btn-max">□</button>
@@ -90,7 +118,7 @@
             </div>
 
             <div class="term-input-line">
-                <span class="term-prompt">jaswanth@limux:~$</span>
+                <span class="term-prompt">jeshu@limux:~$</span>
                 <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
             </div>
         </div>
@@ -137,19 +165,7 @@
             </div>
         </div>
     </div>
-    <div class="desktop-widget calendar-widget">
-        <div class="cal-header">
-            <button id="prev-month" class="cal-nav-btn">&lt;</button>
-            <span id="cal-month-year">MONTH 0000</span>
-            <button id="next-month" class="cal-nav-btn">&gt;</button>
-        </div>
 
-        <div class="cal-weekdays">
-            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-        </div>
-
-        <div class="cal-days" id="cal-days"></div>
-    </div>
 
     <nav class="mac-dock">
         <div class="dock-container">

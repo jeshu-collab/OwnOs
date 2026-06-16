@@ -17,8 +17,7 @@ body {
     width: 100%;
     height: 40px;
     display: flex;
-    /* We changed this from space-between to flex-start */
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     background-color: rgba(20, 20, 25, 0.6);
     backdrop-filter: blur(20px);
@@ -28,6 +27,19 @@ body {
     font-size: 14px;
     font-weight: 500;
     box-sizing: border-box;
+}
+
+.top-bar-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar-center {
+    flex: 0;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #ffffff;
 }
 
 .menu-item {
@@ -365,23 +377,46 @@ body {
 /* ========================= */
 /* DESKTOP CALENDAR WIDGET   */
 /* ========================= */
+.calendar-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    /* Matches top bar height to prevent gap flickering */
+}
+
 
 .calendar-widget {
     position: absolute;
-    top: 40px;
-    right: 40px;
-    width: 220px;
+    top: 45px;
+    /* Sits just beneath the top bar */
+    right: 0;
+    width: 240px;
+
+    /* Animation Initial State (Hidden & Pushed Up) */
+    transform: translateY(-15px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* Prevents invisible clicks */
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+
+    /* The Premium MewoOS Styles */
     background-color: #121216;
-    /* Deep, slightly purplish dark background */
     border-radius: 16px;
-    /* Softer, rounder corners like MewoOS */
-    padding: 15px;
-    z-index: 10;
-    /* Soft shadow with a very subtle pink inner glow */
+    padding: 20px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(244, 143, 177, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 990;
+}
+
+/* The Action: When mouse touches the wrapper, show the calendar */
+.calendar-wrapper:hover .calendar-widget {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
     pointer-events: auto;
-    /* Changed to auto so we can click the arrows */
+    /* Re-enables the arrows */
 }
 
 .cal-header {
