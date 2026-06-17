@@ -605,3 +605,152 @@ if (sliderEl) {
 // --- 5. INITIALIZATION ---
 // Initialize on boot
 loadTrack(currentTrackIndex);
+
+
+
+// =========================
+// LOCAL STORAGE NOTES ENGINE
+// =========================
+
+// 1. Pull existing notes from the browser, or create an empty array if none exist
+let notesArray = JSON.parse(localStorage.getItem('limux_system_notes')) || [];
+let activeNoteId = null;
+
+const notesListEl = document.getElementById('notes-list');
+const noteTitleInput = document.getElementById('note-title-input');
+const noteBodyInput = document.getElementById('note-body-input');
+const newNoteBtn = document.getElementById('new-note-btn');
+const saveNoteBtn = document.getElementById('save-note-btn');
+const deleteNoteBtn = document.getElementById('delete-note-btn');
+
+// NEW: Delete Note Flow
+function deleteCurrentNote() {
+    // If there is no active note, do nothing
+    if (!activeNoteId) return;
+
+    // 1. Filter out the currently active note from the array
+    notesArray = notesArray.filter(note => note.id !== activeNoteId);
+
+    // 2. Save the newly updated (smaller) array to the hard drive
+    saveNotesToStorage();
+
+    // 3. UX Polish: Load the next available note, or create a blank one if empty
+    if (notesArray.length > 0) {
+        loadNoteIntoEditor(notesArray[0].id);
+    } else {
+        createNewNote();
+    }
+}
+
+// Attach the click event
+if (deleteNoteBtn) deleteNoteBtn.addEventListener('click', deleteCurrentNote);
+
+// NEW: Save and Transition Flow
+function saveAndNewNote() {
+    // 1. Force a final save just in case
+    handleTyping();
+
+    // 2. Visual Feedback (Flashes Green)
+    const originalText = saveNoteBtn.innerText;
+    saveNoteBtn.innerText = "Saved!";
+    saveNoteBtn.style.background = "rgba(39, 201, 63, 0.2)";
+    saveNoteBtn.style.color = "#46da5c";
+    saveNoteBtn.style.borderColor = "rgba(39, 201, 63, 0.4)";
+
+    // 3. Wait a split second, then transition to a new note
+    setTimeout(() => {
+        // Reset button styles
+        saveNoteBtn.innerText = originalText;
+        saveNoteBtn.style.background = "";
+        saveNoteBtn.style.color = "";
+        saveNoteBtn.style.borderColor = "";
+
+        // Generate the blank slate
+        createNewNote();
+    }, 600); // 600ms delay for the animation
+}
+
+// Attach the click event
+if (saveNoteBtn) saveNoteBtn.addEventListener('click', saveAndNewNote);
+// 2. Core Save Function
+function saveNotesToStorage() {
+    // Convert the Javascript array to a JSON string and store it
+    localStorage.setItem('limux_system_notes', JSON.stringify(notesArray));
+    renderNotesList();
+}
+
+// 3. Render the sidebar list
+function renderNotesList() {
+    if (!notesListEl) return;
+    notesListEl.innerHTML = '';
+
+    notesArray.forEach(note => {
+        const div = document.createElement('div');
+        // Add the 'active' class if this is the note currently being edited
+        div.className = `note-item ${note.id === activeNoteId ? 'active' : ''}`;
+        div.onclick = () => loadNoteIntoEditor(note.id);
+
+        div.innerHTML = `
+            <h4>${note.title || 'Untitled Note'}</h4>
+            <p>${note.body || 'No additional text...'}</p>
+        `;
+        notesListEl.appendChild(div);
+    });
+}
+
+// 4. Create a fresh note
+function createNewNote() {
+    const newNote = {
+        id: Date.now().toString(), // Unique ID based on exact millisecond
+        title: '',
+        body: '',
+        timestamp: Date.now()
+    };
+
+    notesArray.unshift(newNote); // Put the new note at the top of the list
+    activeNoteId = newNote.id;
+
+    noteTitleInput.value = '';
+    noteBodyInput.value = '';
+    noteTitleInput.focus(); // Snap the cursor to the title
+
+    saveNotesToStorage();
+}
+
+// 5. Load a specific note into the right-side editor
+function loadNoteIntoEditor(id) {
+    activeNoteId = id;
+    const note = notesArray.find(n => n.id === id);
+    if (note) {
+        noteTitleInput.value = note.title;
+        noteBodyInput.value = note.body;
+    }
+    renderNotesList(); // Re-render to move the purple active highlight
+}
+
+// 6. The Auto-Save trigger (fires every time a key is pressed)
+function handleTyping() {
+    if (!activeNoteId) return;
+
+    const note = notesArray.find(n => n.id === activeNoteId);
+    if (note) {
+        note.title = noteTitleInput.value;
+        note.body = noteBodyInput.value;
+        note.timestamp = Date.now();
+        saveNotesToStorage(); // Instantly save to hard drive
+    }
+}
+
+// 7. Event Listeners
+if (noteTitleInput) noteTitleInput.addEventListener('input', handleTyping);
+if (noteBodyInput) noteBodyInput.addEventListener('input', handleTyping);
+if (newNoteBtn) newNoteBtn.addEventListener('click', createNewNote);
+
+// 8. Initialization (When the OS boots)
+if (notesArray.length > 0) {
+    // If they have saved notes, load the most recent one
+    loadNoteIntoEditor(notesArray[0].id);
+} else {
+    // If it's a brand new user, open a blank slate
+    createNewNote();
+}

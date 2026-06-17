@@ -157,6 +157,47 @@
         </div>
     </div>
 
+    <div id="notes-app" class="window dev-window" style="display: none; top: 15%; left: 20%; width: 700px; height: 500px;">
+
+        <div id="notes-appheader" class="window-header dev-header">
+            <div class="window-title dev-title">Notes</div>
+            <div class="dev-controls">
+                <button class="dev-btn-min">_</button>
+                <button class="dev-btn-max">□</button>
+                <button onclick="closeApp('notes-app')" class="dev-btn-close">×</button>
+            </div>
+        </div>
+
+        <div class="window-content notes-content">
+            <div class="notes-sidebar">
+
+                <div id="notes-list">
+                </div>
+
+                <button id="new-note-btn" class="fab-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </button>
+
+            </div>
+
+            <div class="notes-editor-container">
+
+                <div class="editor-header">
+                    <input type="text" id="note-title-input" placeholder="Title..." autocomplete="off" spellcheck="false" maxlength="14">
+                    <div class="header-buttons">
+                        <button id="delete-note-btn" class="glass-btn small-btn danger-btn">Delete</button>
+                        <button id="save-note-btn" class="glass-btn small-btn">Save</button>
+                    </div>
+                </div>
+
+                <textarea id="note-body-input" placeholder="Start typing here..." spellcheck="false"></textarea>
+            </div>
+        </div>
+
+    </div>
+
     <div id="top-music-widget" class="glass-widget closed">
 
         <img id="music-cover" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop" alt="Cover">
