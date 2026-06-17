@@ -805,169 +805,171 @@ body {
     color: #3fb950;
 }
 
-
 /* ========================= */
-/* FULL VERTICAL MUSIC APP   */
+/* TOP BAR MUSIC WIDGET      */
 /* ========================= */
 
-#music-app.dev-window {
-    background-color: #e9ecec !important;
-    /* The light off-white from your screenshot */
-    backdrop-filter: none !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    border-radius: 28px !important;
-    /* Soft, pill-like rounded corners */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-}
+#top-music-widget {
+    position: fixed;
+    top: 50px;
+    /* Adjust this to sit right below your specific top bar */
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    width: 380px;
+    height: 90px;
+    /* Fixed compact height */
 
-.vertical-music-content {
-    padding: 10px 25px 30px 25px;
+    background-color: rgba(20, 20, 25, 0.7);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    /* Pill-like */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+
     display: flex;
-    flex-direction: column;
     align-items: center;
+    padding: 12px;
+    z-index: 9999;
+
+    /* Smooth slide animation */
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Album Art Frame */
-.vertical-artwork-frame {
-    width: 260px;
-    height: 260px;
-    border-radius: 8px;
-    padding: 4px;
-    background-color: #1a1a1a;
-    /* Dark border mimicking the screenshot */
-    margin-bottom: 30px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+/* The class JS will add/remove to slide it up and hide it */
+#top-music-widget.closed {
+    transform: translateX(-50%) translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 #music-cover {
-    width: 100%;
-    height: 100%;
+    width: 66px;
+    height: 66px;
+    border-radius: 14px;
     object-fit: cover;
-    border-radius: 4px;
+    margin-right: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Track Text */
-.vertical-music-info {
-    text-align: center;
-    margin-bottom: 25px;
-    width: 100%;
-}
-
-.vertical-music-info h3 {
-    margin: 0 0 4px 0;
-    color: #2b332d;
-    /* Very dark green/grey */
-    font-size: 22px;
-    font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-.vertical-music-info p {
-    margin: 0;
-    color: #6a756d;
-    /* Muted text */
-    font-size: 14px;
-    font-weight: 500;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-/* --- Wavy Progress Bar --- */
-.vertical-progress-wrapper {
-    width: 100%;
-    margin-bottom: 25px;
-}
-
-.wave-slider-container {
-    position: relative;
-    width: 100%;
-    height: 20px;
+.widget-core {
+    flex: 1;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+.widget-top-row {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
 }
 
-.wave-track-bg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M0,10 Q5,0 10,10 T20,10" fill="none" stroke="%23a0aba4" stroke-width="2"/></svg>');
-    background-repeat: repeat-x;
-    background-position: 0 center;
+/* Compact Text */
+.widget-text {
+    flex: 1;
+    overflow: hidden;
 }
 
-.wave-track-fill {
-    position: absolute;
-    width: 0%;
-    height: 100%;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M0,10 Q5,0 10,10 T20,10" fill="none" stroke="%231d3e2c" stroke-width="2.5"/></svg>');
-    background-repeat: repeat-x;
-    background-position: 0 center;
-}
-
-/* The Invisible Input with the Diamond Knob */
-#music-slider {
-    position: relative;
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    outline: none;
-    z-index: 2;
+.widget-text h4 {
     margin: 0;
-}
-
-#music-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 2px;
-    background: #1d3e2c;
-    /* Dark green diamond */
-    cursor: pointer;
-    transform: rotate(45deg);
-}
-
-/* Timestamps under the wave */
-.vertical-timestamps {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #6a756d;
-    font-weight: 500;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* --- Flat Playback Controls --- */
-.vertical-music-controls {
+.widget-text p {
+    margin: 0;
+    color: #a0a0a0;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Playback Buttons */
+.widget-controls {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 35px;
-    width: 100%;
+    gap: 12px;
 }
 
-.vertical-btn {
+.widget-btn {
     background: transparent;
     border: none;
-    color: #1a1a1a;
+    color: #ffffff;
     cursor: pointer;
     padding: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.1s;
+    transition: transform 0.1s, color 0.1s;
 }
 
-.vertical-btn svg {
-    width: 22px;
-    height: 22px;
+.widget-btn:hover {
+    color: #d1bfe3;
 }
 
-.vertical-btn:active {
+.widget-btn:active {
     transform: scale(0.85);
 }
 
+.widget-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
 .play-btn svg {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+}
+
+/* Normal Progress Bar Layout */
+.widget-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.widget-progress-row span {
+    font-size: 10px;
+    color: #a0a0a0;
+    font-weight: 500;
+    font-family: monospace;
+}
+
+/* The Clean Straight Line Slider */
+#music-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    /* Default unfilled color */
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* The scrubber dot */
+#music-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+#music-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
 }

@@ -348,7 +348,6 @@ function updateTopBar() {
 // Run immediately and update every 1 second
 updateTopBar();
 setInterval(updateTopBar, 1000);
-
 // =========================
 // REAL HTML5 AUDIO ENGINE (Local Only)
 // =========================
@@ -426,6 +425,7 @@ const playlist = [
     }
 ];
 
+// --- 1. LOAD TRACK FUNCTION ---
 function loadTrack(index) {
     const track = playlist[index];
 
@@ -451,12 +451,10 @@ function loadTrack(index) {
             .then(blob => {
                 window.jsmediatags.read(blob, {
                     onSuccess: function (tag) {
-
-                        // 1. DYNAMIC TEXT: Pull actual Title and Artist from the MP3
+                        // DYNAMIC TEXT
                         if (tag.tags.title) {
                             if (titleEl) titleEl.innerText = tag.tags.title;
                         } else {
-                            // Fallback: Use the exact file name if no title is embedded
                             let fileName = track.src.split('/').pop().split('.')[0];
                             if (titleEl) titleEl.innerText = fileName;
                         }
@@ -467,7 +465,7 @@ function loadTrack(index) {
                             if (artistEl) artistEl.innerText = "Unknown Artist";
                         }
 
-                        // 2. THE COVER ART: Set it ONLY once to prevent the flash
+                        // COVER ART
                         const picture = tag.tags.picture;
                         if (picture) {
                             let base64String = "";
@@ -477,13 +475,11 @@ function loadTrack(index) {
                             const imageUrl = `data:${picture.format};base64,${window.btoa(base64String)}`;
                             if (coverEl) coverEl.src = imageUrl;
                         } else {
-                            // If the MP3 physically has no picture, use the array fallback
                             if (coverEl) coverEl.src = track.cover;
                         }
                     },
                     onError: function (error) {
                         console.log('No tags found.', error);
-                        // Fallback to the array data if reading fails completely
                         if (titleEl) titleEl.innerText = track.title;
                         if (artistEl) artistEl.innerText = track.artist;
                         if (coverEl) coverEl.src = track.cover;
@@ -499,15 +495,18 @@ function loadTrack(index) {
 
     // Reset Progress UI
     const slider = document.getElementById("music-slider");
-    const waveFill = document.getElementById("wave-fill");
     const currentTimeEl = document.getElementById("time-current");
 
-    if (slider) slider.value = 0;
-    if (waveFill) waveFill.style.width = "0%";
+    if (slider) {
+        slider.value = 0;
+        slider.style.background = `rgba(255, 255, 255, 0.15)`; // Reset to grey
+    }
     if (currentTimeEl) currentTimeEl.innerText = "00:00";
-}
+} // <-- This brace closes the loadTrack function properly now!
 
-// THE FIX: Bulletproof function to handle audio promises
+
+// --- 2. PLAYBACK CONTROLS ---
+
 function playSafe() {
     let playPromise = currentAudio.play();
 
@@ -515,7 +514,6 @@ function playSafe() {
         playPromise.then(_ => {
             isMusicPlaying = true;
             const playIcon = document.getElementById('play-icon');
-            // THE FIX: Solid, visible Pause SVG
             if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
         }).catch(error => {
             console.log("Playback interrupted or file missing:", error);
@@ -533,7 +531,6 @@ function togglePlay() {
         currentAudio.pause();
         isMusicPlaying = false;
         const playIcon = document.getElementById('play-icon');
-        // Revert to Play SVG
         if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
     }
 }
@@ -544,7 +541,7 @@ function nextTrack() {
     loadTrack(currentTrackIndex);
 
     if (isMusicPlaying) {
-        setTimeout(() => { playSafe(); }, 50); // Small delay lets the browser fetch the new file
+        setTimeout(() => { playSafe(); }, 50);
     }
 }
 
@@ -558,19 +555,29 @@ function prevTrack() {
     }
 }
 
-// Automatically update the slider as the real song plays
+// --- 3. WIDGET CONTROLS ---
+function toggleMusicWidget() {
+    const widget = document.getElementById('top-music-widget');
+    if (widget) widget.classList.toggle('closed');
+}
+
+
+// --- 4. EVENT LISTENERS ---
+
+// Automatically update the straight slider as the song plays
 currentAudio.addEventListener('timeupdate', () => {
     if (!isNaN(currentAudio.duration)) {
         const progressPercent = (currentAudio.currentTime / currentAudio.duration) * 100;
 
         const slider = document.getElementById('music-slider');
-        const waveFill = document.getElementById("wave-fill");
         const currentTimeEl = document.getElementById("time-current");
 
-        if (slider) slider.value = progressPercent;
-        if (waveFill) waveFill.style.width = progressPercent + '%';
+        if (slider) {
+            slider.value = progressPercent;
+            // Dynamically colors the slider line pastel purple
+            slider.style.background = `linear-gradient(to right, #d1bfe3 ${progressPercent}%, rgba(255, 255, 255, 0.15) ${progressPercent}%)`;
+        }
 
-        // Format real timestamps (e.g., 01:24)
         let currentMins = Math.floor(currentAudio.currentTime / 60);
         let currentSecs = Math.floor(currentAudio.currentTime % 60);
         if (currentTimeEl) {
@@ -595,5 +602,6 @@ if (sliderEl) {
     });
 }
 
+// --- 5. INITIALIZATION ---
 // Initialize on boot
 loadTrack(currentTrackIndex);
