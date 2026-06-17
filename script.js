@@ -429,41 +429,72 @@ const playlist = [
 function loadTrack(index) {
     const track = playlist[index];
 
-    // Inject Text Data
+    // Grab the UI elements
     const titleEl = document.getElementById("music-title");
     const artistEl = document.getElementById("music-artist");
     const totalTimeEl = document.getElementById("time-total");
+    const coverEl = document.getElementById("music-cover");
 
-    if (titleEl) titleEl.innerText = track.title;
-    if (artistEl) artistEl.innerText = track.artist;
+    // Instantly set the duration and a temporary loading state for the text
     if (totalTimeEl) totalTimeEl.innerText = track.duration;
+    if (titleEl) titleEl.innerText = "Loading...";
+    if (artistEl) artistEl.innerText = "...";
 
     // Load the actual audio file
     currentAudio.src = track.src;
     currentAudio.load();
 
-    // THE FIX: Instantly update the cover art to the array image so it never freezes
-    const coverEl = document.getElementById("music-cover");
-    if (coverEl) coverEl.src = track.cover;
-
-    // Try to find an embedded MP3 cover in the background without lagging the app
+    // Crack open the MP3 to get both the Image AND the Text Data
     if (window.jsmediatags) {
-        window.jsmediatags.read(track.src, {
-            onSuccess: function (tag) {
-                const picture = tag.tags.picture;
-                if (picture) {
-                    let base64String = "";
-                    for (let i = 0; i < picture.data.length; i++) {
-                        base64String += String.fromCharCode(picture.data[i]);
+        fetch(track.src)
+            .then(response => response.blob())
+            .then(blob => {
+                window.jsmediatags.read(blob, {
+                    onSuccess: function (tag) {
+
+                        // 1. DYNAMIC TEXT: Pull actual Title and Artist from the MP3
+                        if (tag.tags.title) {
+                            if (titleEl) titleEl.innerText = tag.tags.title;
+                        } else {
+                            // Fallback: Use the exact file name if no title is embedded
+                            let fileName = track.src.split('/').pop().split('.')[0];
+                            if (titleEl) titleEl.innerText = fileName;
+                        }
+
+                        if (tag.tags.artist) {
+                            if (artistEl) artistEl.innerText = tag.tags.artist;
+                        } else {
+                            if (artistEl) artistEl.innerText = "Unknown Artist";
+                        }
+
+                        // 2. THE COVER ART: Set it ONLY once to prevent the flash
+                        const picture = tag.tags.picture;
+                        if (picture) {
+                            let base64String = "";
+                            for (let i = 0; i < picture.data.length; i++) {
+                                base64String += String.fromCharCode(picture.data[i]);
+                            }
+                            const imageUrl = `data:${picture.format};base64,${window.btoa(base64String)}`;
+                            if (coverEl) coverEl.src = imageUrl;
+                        } else {
+                            // If the MP3 physically has no picture, use the array fallback
+                            if (coverEl) coverEl.src = track.cover;
+                        }
+                    },
+                    onError: function (error) {
+                        console.log('No tags found.', error);
+                        // Fallback to the array data if reading fails completely
+                        if (titleEl) titleEl.innerText = track.title;
+                        if (artistEl) artistEl.innerText = track.artist;
+                        if (coverEl) coverEl.src = track.cover;
                     }
-                    const imageUrl = `data:${picture.format};base64,${window.btoa(base64String)}`;
-                    if (coverEl) coverEl.src = imageUrl; // Overwrite if a real cover is found
-                }
-            },
-            onError: function (error) {
-                console.log('Using default cover art.');
-            }
-        });
+                });
+            })
+            .catch(error => {
+                console.log('Could not fetch the MP3 blob:', error);
+                if (titleEl) titleEl.innerText = track.title;
+                if (coverEl) coverEl.src = track.cover;
+            });
     }
 
     // Reset Progress UI
