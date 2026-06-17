@@ -692,7 +692,7 @@ function renderNotesList() {
 
         div.innerHTML = `
             <h4>${note.title || 'Untitled Note'}</h4>
-            <p>${note.body || 'No additional text...'}</p>
+            <p>${note.body || ''}</p>
         `;
         notesListEl.appendChild(div);
     });
