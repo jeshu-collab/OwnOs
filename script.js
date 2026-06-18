@@ -252,15 +252,16 @@ if (termInput) {
             // 3. Clear the input box
             termInput.value = "";
 
-            // 4. FIX: Wait 10ms for the DOM to render the new text, then force scroll!
+            // 4. FIX: Wait 50ms for the DOM to finish drawing, then force an overshoot scroll
             setTimeout(() => {
-                if (termContainer) termContainer.scrollTop = termContainer.scrollHeight;
-                termInput.scrollIntoView({ block: "end" });
-            }, 10);
+                if (termContainer) {
+                    // The +100 guarantees it pushes past any CSS padding!
+                    termContainer.scrollTop = termContainer.scrollHeight + 100;
+                }
+            }, 50);
         }
     });
 }
-
 function printLine(html) {
     const newLine = document.createElement("div");
     newLine.innerHTML = html;

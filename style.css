@@ -1451,3 +1451,57 @@ button,
     opacity: 1;
     transition: none;
 }
+
+/* ========================= */
+/* TERMINAL SCROLL BUG FIX   */
+/* ========================= */
+
+.term-input-line {
+    /* 1. Forbids the browser from squishing the height of the typing line */
+    flex-shrink: 0 !important;
+
+    /* 2. Forces a gap at the bottom so the scrollbar goes past the text */
+    padding-bottom: 25px !important;
+    margin-top: 5px !important;
+}
+
+#term-output {
+    /* 3. Ensures the output text doesn't collapse on itself */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================= */
+/* CUSTOM TERMINAL SCROLLBAR */
+/* ========================= */
+
+/* 1. Sets the width of the scrollbar */
+.term-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* 2. Makes the background track completely invisible so the glass blur reaches the edge */
+.term-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin-bottom: 10px;
+    /* Keeps the scrollbar from overlapping the bottom rounded corners */
+    margin-top: 5px;
+}
+
+/* 3. The actual draggable scrollbar (Floating Glass Pill) */
+.term-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    /* Subtle frosted glass */
+    border-radius: 10px;
+
+    /* This border acts as "padding" to make the scrollbar look like it's floating away from the edge */
+    border: 3px solid rgba(15, 15, 20, 0.0);
+    background-clip: padding-box;
+}
+
+/* 4. Glows your theme's Cyan color when you hover or drag it */
+.term-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(52, 226, 226, 0.4);
+    border: 3px solid rgba(15, 15, 20, 0.0);
+    background-clip: padding-box;
+}
