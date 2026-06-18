@@ -755,53 +755,64 @@ if (notesArray.length > 0) {
     createNewNote();
 }
 
-
 // =========================
 // HARDWARE CAMERA ENGINE
 // =========================
 
 let cameraStream = null;
 
-// 1. Boot up the hardware (UI is handled by toggleApp now)
+// 1. Boot up the hardware
 async function bootCamera() {
     const videoEl = document.getElementById('camera-feed');
-
     try {
-        // Request the user's high-res video feed
         cameraStream = await navigator.mediaDevices.getUserMedia({
             video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
             audio: false
         });
-
         videoEl.srcObject = cameraStream;
-
-        // CRITICAL FIX: Force the browser to render the video frames
         videoEl.play();
-
     } catch (err) {
         console.error("Camera access denied or missing:", err);
         alert("Could not access the camera. Please ensure permissions are granted.");
     }
 }
 
-// Safely close the UI and shut down the hardware
-function closeCameraApp() {
-    // 1. Hide the window directly
+// 2. Smart Launcher for the Dock Icon
+// 2. Smart Launcher for the Dock Icon
+async function handleCameraToggle() {
     const cameraWindow = document.getElementById('camera-app');
-    if (cameraWindow) {
-        cameraWindow.style.display = 'none';
-    }
 
-    // 2. Kill the video tracks to turn off the webcam light
+    // 1. Let your Limux OS window manager handle the visual pop-up perfectly
+    toggleApp('camera-app');
+
+    // 2. Give the OS a split-second to update the HTML, then check its state
+    setTimeout(async () => {
+        // If your OS just opened the window, boot the hardware
+        if (cameraWindow.style.display !== 'none') {
+            await bootCamera();
+        } else {
+            // If your OS just closed the window, kill the hardware
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+    }, 50);
+}
+
+// 3. Safely close UI and hardware (Triggered by the red X)
+function closeCameraApp() {
+    // 1. Let your Limux OS handle the close animation safely
+    closeApp('camera-app');
+
+    // 2. Kill the physical webcam light
     if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
     }
 }
 
-// ... keep your takePhoto() function here ...
-
-// 3. Capture the frame and download it
+// 4. Capture the frame and download it
 function takePhoto() {
     const video = document.getElementById('camera-feed');
     const canvas = document.getElementById('camera-canvas');
@@ -809,28 +820,25 @@ function takePhoto() {
 
     if (!cameraStream) return;
 
-    // Trigger the white flash effect
+    // Trigger flash
     flash.classList.add('flash');
     setTimeout(() => flash.classList.remove('flash'), 50);
 
-    // Set the hidden canvas to match the exact video resolution
+    // Set canvas dimensions
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
     const context = canvas.getContext('2d');
 
-    // Since we mirrored the video in CSS, we have to mirror the canvas draw so the saved image looks correct
+    // Mirror image so it saves correctly
     context.translate(canvas.width, 0);
     context.scale(-1, 1);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert the canvas to a raw PNG image URL
+    // Download file
     const imageUrl = canvas.toDataURL('image/png');
-
-    // Create a temporary, invisible link to force the browser to download the image
     const downloadLink = document.createElement('a');
     downloadLink.href = imageUrl;
-    downloadLink.download = `Limux_Capture_${Date.now()}.png`; // Unique filename
+    downloadLink.download = `Limux_Capture_${Date.now()}.png`;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);

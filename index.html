@@ -3,7 +3,7 @@
 
 <head>
     <title>Web OS</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./style.css?v=2">
 </head>
 
 <body>
@@ -239,7 +239,6 @@
 
         </div>
     </div>
-
     <div id="camera-app" class="window dev-window" style="display: none; top: 10%; left: 30%; width: 640px; height: 520px;">
 
         <div id="camera-appheader" class="window-header dev-header">
@@ -271,7 +270,7 @@
     <nav class="mac-dock">
         <div class="dock-container">
 
-            <button class="dock-item" onclick="toggleApp('camera-app'); bootCamera();">
+            <button class="dock-item" onclick="handleCameraToggle()">
                 <img style="border-radius: 8px;" src="./camera.jpg" alt="Camera">
                 <span class="dock-tooltip">Camera</span>
             </button>
