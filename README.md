@@ -13,4 +13,4 @@ If you wish to test or modify the code on your own machine, the setup is extreme
 
 1. Clone this repository to your local system:
 ```bash
-   git clone [https://github.com/yourusername/limux-os.git](https://github.com/yourusername/limux-os.git)
+   git clone (https://github.com/yourusername/limux-os.git)
