@@ -754,3 +754,84 @@ if (notesArray.length > 0) {
     // If it's a brand new user, open a blank slate
     createNewNote();
 }
+
+
+// =========================
+// HARDWARE CAMERA ENGINE
+// =========================
+
+let cameraStream = null;
+
+// 1. Boot up the hardware (UI is handled by toggleApp now)
+async function bootCamera() {
+    const videoEl = document.getElementById('camera-feed');
+
+    try {
+        // Request the user's high-res video feed
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+            audio: false
+        });
+
+        videoEl.srcObject = cameraStream;
+
+        // CRITICAL FIX: Force the browser to render the video frames
+        videoEl.play();
+
+    } catch (err) {
+        console.error("Camera access denied or missing:", err);
+        alert("Could not access the camera. Please ensure permissions are granted.");
+    }
+}
+
+// Safely close the UI and shut down the hardware
+function closeCameraApp() {
+    // 1. Hide the window directly
+    const cameraWindow = document.getElementById('camera-app');
+    if (cameraWindow) {
+        cameraWindow.style.display = 'none';
+    }
+
+    // 2. Kill the video tracks to turn off the webcam light
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+}
+
+// ... keep your takePhoto() function here ...
+
+// 3. Capture the frame and download it
+function takePhoto() {
+    const video = document.getElementById('camera-feed');
+    const canvas = document.getElementById('camera-canvas');
+    const flash = document.getElementById('camera-flash');
+
+    if (!cameraStream) return;
+
+    // Trigger the white flash effect
+    flash.classList.add('flash');
+    setTimeout(() => flash.classList.remove('flash'), 50);
+
+    // Set the hidden canvas to match the exact video resolution
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext('2d');
+
+    // Since we mirrored the video in CSS, we have to mirror the canvas draw so the saved image looks correct
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert the canvas to a raw PNG image URL
+    const imageUrl = canvas.toDataURL('image/png');
+
+    // Create a temporary, invisible link to force the browser to download the image
+    const downloadLink = document.createElement('a');
+    downloadLink.href = imageUrl;
+    downloadLink.download = `Limux_Capture_${Date.now()}.png`; // Unique filename
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}

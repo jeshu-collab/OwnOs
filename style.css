@@ -1286,12 +1286,138 @@ body {
 /* ========================= */
 
 * {
-
-    cursor: url('./cursor.png') 0 0, auto !important;
+    /* The arrow path is shifted so the tip is perfectly at 0,0. 
+       The hotspot is now explicitly 0 0. No more phantom clicks! */
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M0 0L14 10L7 11.5L4 19L0 0Z" fill="%230d0d12" stroke="%23d1bfe3" stroke-width="1.5" stroke-linejoin="round"/></svg>') 0 0, auto !important;
 }
 
-/* Optional UX Fix: Keep the text-selection cursor for typing */
 input[type="text"],
 textarea {
     cursor: text !important;
+}
+
+button,
+.glass-btn,
+.dock-item,
+.fab-btn,
+.dev-controls button {
+    cursor: inherit !important;
+}
+
+/* ...until the user hovers over them */
+.dev-controls button:hover {
+    color: rgba(0, 0, 0, 1);
+    transform: scale(1.15);
+    /* Adds a subtle "pop" so you know you are on target */
+}
+
+/* ========================= */
+/* CAMERA APP UI             */
+/* ========================= */
+
+#camera-app.dev-window {
+    background-color: #141419 !important;
+    border: 1px solid #2a2a35 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
+    overflow: hidden;
+}
+
+#camera-appheader {
+    background: #0d0d12 !important;
+    border-bottom: 1px solid #2a2a35;
+}
+
+.camera-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 40px);
+    background: #1c1c22 !important;
+    /* Solid lighter gray panel */
+    padding: 15px !important;
+}
+
+/* The Deep Inset Video Frame */
+.camera-viewfinder {
+    position: relative;
+    flex: 1;
+    background: #0d0d12;
+    border: 2px solid #2a2a35;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+#camera-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensures the video fills the box without stretching */
+    transform: scaleX(-1);
+    /* Mirrors the feed so it acts like a real mirror */
+}
+
+/* Shutter Flash Animation overlay */
+#camera-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease-out;
+}
+
+#camera-flash.flash {
+    opacity: 1;
+    transition: none;
+    /* Instantly white, slowly fades out */
+}
+
+/* Bottom Control Deck */
+.camera-controls {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    padding-top: 15px;
+}
+
+/* The Physical Shutter Button */
+.shutter-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #2a2a35;
+    border: 3px solid #3b3b4a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shutter-btn:hover {
+    border-color: #d1bfe3;
+    /* Glows purple on hover */
+}
+
+.shutter-inner {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    transition: transform 0.1s ease, background 0.1s;
+}
+
+.shutter-btn:active .shutter-inner {
+    transform: scale(0.85);
+    /* Physically pushes in when clicked */
+    background: #ffffff;
 }

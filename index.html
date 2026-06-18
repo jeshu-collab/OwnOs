@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Premium Web OS</title>
+    <title>Web OS</title>
     <link rel="stylesheet" href="./style.css">
 </head>
 
@@ -198,6 +198,8 @@
 
     </div>
 
+
+
     <div id="top-music-widget" class="glass-widget closed">
 
         <img id="music-cover" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop" alt="Cover">
@@ -238,11 +240,38 @@
         </div>
     </div>
 
+    <div id="camera-app" class="window dev-window" style="display: none; top: 10%; left: 30%; width: 640px; height: 520px;">
+
+        <div id="camera-appheader" class="window-header dev-header">
+            <div class="window-title dev-title">Camera</div>
+            <div class="dev-controls">
+                <button class="dev-btn-min">_</button>
+                <button class="dev-btn-max">□</button>
+                <button onclick="closeCameraApp()" class="dev-btn-close">×</button>
+            </div>
+        </div>
+
+        <div class="window-content camera-content">
+            <div class="camera-viewfinder">
+                <video id="camera-feed" autoplay playsinline></video>
+                <div id="camera-flash"></div>
+            </div>
+
+            <div class="camera-controls">
+                <button id="shutter-btn" class="shutter-btn" onclick="takePhoto()">
+                    <div class="shutter-inner"></div>
+                </button>
+            </div>
+
+            <canvas id="camera-canvas" style="display: none;"></canvas>
+        </div>
+    </div>
+
 
     <nav class="mac-dock">
         <div class="dock-container">
 
-            <button class="dock-item" onclick="toggleApp('camera-app')">
+            <button class="dock-item" onclick="toggleApp('camera-app'); bootCamera();">
                 <img style="border-radius: 8px;" src="./camera.jpg" alt="Camera">
                 <span class="dock-tooltip">Camera</span>
             </button>
