@@ -6,7 +6,7 @@ Limux OS is a superb web-based operating system featuring a frosted-glass UI and
 
 ## 📸 Preview
 ![Limux OS Preview]
-![Uploading Screenshot 2026-06-18 200445.png…]()
+![image alt](https://github.com/jeshu-collab/OwnOs/blob/ae369bf661692916a414320482083bfe8e361389/preview.png)
 
 ## 💻 How to Run Locally
 If you wish to test or modify the code on your own machine, the setup is extremely simple:
