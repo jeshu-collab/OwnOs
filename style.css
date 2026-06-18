@@ -598,6 +598,20 @@ body {
 /* 3. Strip the solid black background from the inside of the terminal so the blur shows through */
 .term-content {
     background-color: transparent !important;
+    color: #eeeeec;
+    /* Default system text color */
+}
+
+/* 4. Vibrant Cyan input text to match the theme */
+#term-input {
+    color: #34e2e2 !important;
+    caret-color: #34e2e2 !important;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
 }
 
 /* ========================= */
