@@ -1,349 +1,332 @@
-// =========================
-// CLOCK SYSTEM & TOP BAR
-// =========================
-function updateTime() {
-    var timeElement = document.querySelector("#timeElement");
-    if (timeElement) {
-        var options = { hour: '2-digit', minute: '2-digit' };
-        timeElement.innerHTML = new Date().toLocaleString('en-US', options).replace(/,/g, '');
+// Setting up the top navigation clock system
+function refreshClock() {
+    var timeBox = document.querySelector("#timeElement");
+    if (timeBox) {
+        var formatStyle = { hour: '2-digit', minute: '2-digit' };
+        timeBox.innerHTML = new Date().toLocaleString('en-US', formatStyle).replace(/,/g, '');
     }
 }
-setInterval(updateTime, 1000);
-updateTime();
+setInterval(refreshClock, 1000);
+refreshClock();
 
-function updateTopBar() {
-    const now = new Date();
-    const timeElement = document.getElementById("timeElement");
-    if (timeElement) {
-        timeElement.innerText = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+function refreshTopNavbar() {
+    const todayNow = new Date();
+    const timeBox = document.getElementById("timeElement");
+    if (timeBox) {
+        timeBox.innerText = todayNow.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     }
-    const dateTrigger = document.getElementById("date-trigger");
-    if (dateTrigger) {
-        dateTrigger.innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const dateBtn = document.getElementById("date-trigger");
+    if (dateBtn) {
+        dateBtn.innerText = todayNow.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 }
-updateTopBar();
-setInterval(updateTopBar, 1000);
+refreshTopNavbar();
+setInterval(refreshTopNavbar, 1000);
 
-// =========================
-// OS WINDOW MANAGER (MERGED)
-// =========================
-let highestZIndex = 100;
+// Managing the window layers and app toggles
+let topWindowLayer = 100;
 
-function bringToFront(windowElement) {
-    highestZIndex++;
-    windowElement.style.zIndex = highestZIndex;
+function focusWindow(winElem) {
+    topWindowLayer++;
+    winElem.style.zIndex = topWindowLayer;
 }
 
-function toggleApp(appId) {
-    const app = document.getElementById(appId);
-    if (!app) return;
+function launchOrHideApp(targetAppId) {
+    const targetApp = document.getElementById(targetAppId);
+    if (!targetApp) return;
 
-    // If it's already open, run the close sequence
-    if (app.classList.contains("is-open") || app.style.display === 'block') {
-        closeApp(appId);
+    // Checking if the app is already visible on the screen
+    if (targetApp.classList.contains("is-open") || targetApp.style.display === 'block') {
+        shutDownApp(targetAppId);
     } else {
-        // Open the app
-        app.style.display = "block";
-        bringToFront(app);
+        // Booting up the app window
+        targetApp.style.display = "block";
+        focusWindow(targetApp);
 
-        // Trigger animation class
+        // Applying a slight delay so the CSS pop animation works smoothly
         setTimeout(() => {
-            app.classList.add("is-open");
+            targetApp.classList.add("is-open");
         }, 10);
 
-        // If it's the terminal, automatically focus the typing cursor!
-        if (appId === 'terminal-app') {
+        // Auto-focusing the terminal input so the user can just type immediately
+        if (targetAppId === 'terminal-app') {
             setTimeout(() => {
-                const termInput = document.getElementById('term-input');
-                if (termInput) termInput.focus();
+                const limuxCommandLine = document.getElementById('term-input');
+                if (limuxCommandLine) limuxCommandLine.focus();
             }, 100);
         }
     }
 }
 
-// 2. Close App (Upgraded with Terminal Reset)
-function closeApp(appId) {
-    const app = document.getElementById(appId);
-    if (!app) return;
+// Safely closing applications and resetting the terminal history
+function shutDownApp(targetAppId) {
+    const targetApp = document.getElementById(targetAppId);
+    if (!targetApp) return;
 
-    app.classList.remove("is-open");
+    targetApp.classList.remove("is-open");
 
-    // Wait for CSS shrink animation to finish before hiding
+    // Waiting for the shrink animation to finish fully before hiding
     setTimeout(() => {
-        if (!app.classList.contains("is-open")) {
-            app.style.display = "none";
+        if (!targetApp.classList.contains("is-open")) {
+            targetApp.style.display = "none";
 
-            // --- NEW: Reset Terminal on Close ---
-            if (appId === 'terminal-app') {
-                const termOutput = document.getElementById("term-output");
-                const termInput = document.getElementById("term-input");
+            // If the user closed the terminal, wipe the history clean
+            if (targetAppId === 'terminal-app') {
+                const terminalScreen = document.getElementById("term-output");
+                const limuxCommandLine = document.getElementById("term-input");
 
-                // Wipes the history and restores the boot text
-                if (termOutput) {
-                    termOutput.innerHTML = `
+                if (terminalScreen) {
+                    terminalScreen.innerHTML = `
                         <div>Limux OS v1.0.0 (tty1)</div>
-                        <div>Type 'help' to see available commands.</div>
+                        <div>Kindly type 'help' to check available commands.</div>
                         <br>
                     `;
                 }
-                // Clears whatever you were typing
-                if (termInput) termInput.value = "";
+                if (limuxCommandLine) limuxCommandLine.value = "";
             }
-            // ------------------------------------
         }
     }, 250);
 }
 
-function minimizeApp(appId) {
-    const appWindow = document.getElementById(appId);
-    if (appWindow) appWindow.style.display = 'none';
+function minimizeAppWindow(targetAppId) {
+    const appWin = document.getElementById(targetAppId);
+    if (appWin) appWin.style.display = 'none';
 }
 
-function maximizeApp(appId) {
-    const appWindow = document.getElementById(appId);
-    if (!appWindow) return;
+function expandAppToFull(targetAppId) {
+    const appWin = document.getElementById(targetAppId);
+    if (!appWin) return;
 
-    if (appWindow.classList.contains('maximized')) {
-        appWindow.classList.remove('maximized');
-        appWindow.style.width = appWindow.dataset.prevWidth;
-        appWindow.style.height = appWindow.dataset.prevHeight;
-        appWindow.style.top = appWindow.dataset.prevTop;
-        appWindow.style.left = appWindow.dataset.prevLeft;
+    if (appWin.classList.contains('maximized')) {
+        appWin.classList.remove('maximized');
+        appWin.style.width = appWin.dataset.oldWidth;
+        appWin.style.height = appWin.dataset.oldHeight;
+        appWin.style.top = appWin.dataset.oldTop;
+        appWin.style.left = appWin.dataset.oldLeft;
     } else {
-        appWindow.dataset.prevWidth = appWindow.style.width || getComputedStyle(appWindow).width;
-        appWindow.dataset.prevHeight = appWindow.style.height || getComputedStyle(appWindow).height;
-        appWindow.dataset.prevTop = appWindow.style.top || getComputedStyle(appWindow).top;
-        appWindow.dataset.prevLeft = appWindow.style.left || getComputedStyle(appWindow).left;
+        appWin.dataset.oldWidth = appWin.style.width || getComputedStyle(appWin).width;
+        appWin.dataset.oldHeight = appWin.style.height || getComputedStyle(appWin).height;
+        appWin.dataset.oldTop = appWin.style.top || getComputedStyle(appWin).top;
+        appWin.dataset.oldLeft = appWin.style.left || getComputedStyle(appWin).left;
 
-        appWindow.classList.add('maximized');
-        appWindow.style.width = '100vw';
-        appWindow.style.height = 'calc(100vh - 80px)';
-        appWindow.style.top = '0';
-        appWindow.style.left = '0';
-        bringToFront(appWindow);
+        appWin.classList.add('maximized');
+        appWin.style.width = '100vw';
+        appWin.style.height = 'calc(100vh - 80px)';
+        appWin.style.top = '0';
+        appWin.style.left = '0';
+        focusWindow(appWin);
     }
 }
 
-// =========================
-// DRAGGABLE WINDOWS
-// =========================
-function makeDraggable(windowElement) {
-    let mouseX = 0;
-    let mouseY = 0;
+// Logic to allow dragging windows across the desktop
+function enableDragSetup(winElem) {
+    let pointerX = 0;
+    let pointerY = 0;
 
-    const header = windowElement.querySelector(".window-header");
-    if (!header) return;
+    const topHeader = winElem.querySelector(".window-header");
+    if (!topHeader) return;
 
-    header.onmousedown = startDrag;
+    topHeader.onmousedown = beginDrag;
 
-    function startDrag(event) {
-        event.preventDefault();
-        bringToFront(windowElement);
+    function beginDrag(e) {
+        e.preventDefault();
+        focusWindow(winElem);
 
-        mouseX = event.clientX;
-        mouseY = event.clientY;
+        pointerX = e.clientX;
+        pointerY = e.clientY;
 
-        document.onmousemove = drag;
-        document.onmouseup = stopDrag;
+        document.onmousemove = performDrag;
+        document.onmouseup = stopDragEvent;
     }
 
-    function drag(event) {
-        event.preventDefault();
-        let dx = event.clientX - mouseX;
-        let dy = event.clientY - mouseY;
+    function performDrag(e) {
+        e.preventDefault();
+        let moveX = e.clientX - pointerX;
+        let moveY = e.clientY - pointerY;
 
-        mouseX = event.clientX;
-        mouseY = event.clientY;
+        pointerX = e.clientX;
+        pointerY = e.clientY;
 
-        let newTop = windowElement.offsetTop + dy;
-        let newLeft = windowElement.offsetLeft + dx;
+        let calculateTop = winElem.offsetTop + moveY;
+        let calculateLeft = winElem.offsetLeft + moveX;
 
-        const topBoundary = 0;
-        if (newTop < topBoundary) {
-            newTop = topBoundary;
+        const screenCeiling = 0;
+        if (calculateTop < screenCeiling) {
+            calculateTop = screenCeiling;
         }
 
-        windowElement.style.left = newLeft + "px";
-        windowElement.style.top = newTop + "px";
+        winElem.style.left = calculateLeft + "px";
+        winElem.style.top = calculateTop + "px";
     }
 
-    function stopDrag() {
+    function stopDragEvent() {
         document.onmousemove = null;
         document.onmouseup = null;
     }
 }
 
-// Auto Setup All Windows
-document.querySelectorAll(".window").forEach(windowElement => {
-    makeDraggable(windowElement);
-    windowElement.addEventListener("mousedown", () => bringToFront(windowElement));
+// Applying drag functionality to all windows automatically on boot
+document.querySelectorAll(".window").forEach(winElem => {
+    enableDragSetup(winElem);
+    winElem.addEventListener("mousedown", () => focusWindow(winElem));
 });
 
-// =========================
-// CALENDAR WIDGET ENGINE
-// =========================
-let navDate = new Date();
+// Calendar Widget Logic
+let currentCalMonth = new Date();
 
-function renderCalendar() {
-    const year = navDate.getFullYear();
-    const month = navDate.getMonth();
-    const realToday = new Date();
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function updateCalendarUI() {
+    const activeYear = currentCalMonth.getFullYear();
+    const activeMonth = currentCalMonth.getMonth();
+    const realDateCheck = new Date();
+    const monthLabels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    const monthHeader = document.getElementById("cal-month-year");
-    if (monthHeader) monthHeader.innerText = `${monthNames[month]} ${year}`;
+    const titleHeader = document.getElementById("cal-month-year");
+    if (titleHeader) titleHeader.innerText = `${monthLabels[activeMonth]} ${activeYear}`;
 
-    const firstDayIndex = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startingDay = new Date(activeYear, activeMonth, 1).getDay();
+    const totalDays = new Date(activeYear, activeMonth + 1, 0).getDate();
 
-    const daysContainer = document.getElementById("cal-days");
-    if (!daysContainer) return;
-    daysContainer.innerHTML = "";
+    const daysGrid = document.getElementById("cal-days");
+    if (!daysGrid) return;
+    daysGrid.innerHTML = "";
 
-    for (let i = 0; i < firstDayIndex; i++) {
-        const emptyDiv = document.createElement("div");
-        emptyDiv.className = "cal-day empty";
-        daysContainer.appendChild(emptyDiv);
+    for (let i = 0; i < startingDay; i++) {
+        const emptyBlock = document.createElement("div");
+        emptyBlock.className = "cal-day empty";
+        daysGrid.appendChild(emptyBlock);
     }
 
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayDiv = document.createElement("div");
-        dayDiv.className = "cal-day";
-        dayDiv.innerText = i;
+    for (let i = 1; i <= totalDays; i++) {
+        const dateBlock = document.createElement("div");
+        dateBlock.className = "cal-day";
+        dateBlock.innerText = i;
 
-        if (i === realToday.getDate() && month === realToday.getMonth() && year === realToday.getFullYear()) {
-            dayDiv.classList.add("current");
+        if (i === realDateCheck.getDate() && activeMonth === realDateCheck.getMonth() && activeYear === realDateCheck.getFullYear()) {
+            dateBlock.classList.add("current");
         }
-        daysContainer.appendChild(dayDiv);
+        daysGrid.appendChild(dateBlock);
     }
 }
 
-const prevBtn = document.getElementById("prev-month");
-const nextBtn = document.getElementById("next-month");
-if (prevBtn) prevBtn.addEventListener("click", () => { navDate.setMonth(navDate.getMonth() - 1); renderCalendar(); });
-if (nextBtn) nextBtn.addEventListener("click", () => { navDate.setMonth(navDate.getMonth() + 1); renderCalendar(); });
-renderCalendar();
+const backMonthBtn = document.getElementById("prev-month");
+const fwdMonthBtn = document.getElementById("next-month");
+if (backMonthBtn) backMonthBtn.addEventListener("click", () => { currentCalMonth.setMonth(currentCalMonth.getMonth() - 1); updateCalendarUI(); });
+if (fwdMonthBtn) fwdMonthBtn.addEventListener("click", () => { currentCalMonth.setMonth(currentCalMonth.getMonth() + 1); updateCalendarUI(); });
+updateCalendarUI();
 
-// =========================
-// TERMINAL APP ENGINE
-// =========================
-const termInput = document.getElementById("term-input");
-const termOutput = document.getElementById("term-output");
-const termContainer = document.getElementById("term-container");
+// Core Terminal Application logic
+const limuxCommandLine = document.getElementById("term-input");
+const terminalScreen = document.getElementById("term-output");
+const terminalWrapper = document.getElementById("term-container");
 
-if (termContainer) {
-    termContainer.addEventListener("click", () => {
-        if (termInput) termInput.focus();
+if (terminalWrapper) {
+    terminalWrapper.addEventListener("click", () => {
+        if (limuxCommandLine) limuxCommandLine.focus();
     });
 }
 
-if (termInput) {
-    termInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            const command = termInput.value.trim();
+if (limuxCommandLine) {
+    limuxCommandLine.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            const userText = limuxCommandLine.value.trim();
 
-            // 1. Print the command the user just typed
-            printLine(`<span style="color: #87af5f; font-weight: bold;">jaswanth@limux:~$</span> <span style="color: #34e2e2;">${command}</span>`);
+            // Displaying the user's typed command in cyan
+            appendTerminalText(`<span style="color: #87af5f; font-weight: bold;">jaswanth@limux:~$</span> <span style="color: #34e2e2;">${userText}</span>`);
 
-            // 2. Process the command
-            processCommand(command);
+            executeTerminalAction(userText);
+            limuxCommandLine.value = "";
 
-            // 3. Clear the input box
-            termInput.value = "";
-
-            // 4. FIX: Wait 50ms for the DOM to finish drawing, then force an overshoot scroll
+            // Forcing the scrollbar to the bottom ensuring the input box stays visible
             setTimeout(() => {
-                if (termContainer) {
-                    // The +100 guarantees it pushes past any CSS padding!
-                    termContainer.scrollTop = termContainer.scrollHeight + 100;
+                if (terminalWrapper) {
+                    terminalWrapper.scrollTop = terminalWrapper.scrollHeight + 100;
                 }
             }, 50);
         }
     });
 }
-function printLine(html) {
-    const newLine = document.createElement("div");
-    newLine.innerHTML = html;
-    newLine.style.marginBottom = "4px";
-    if (termOutput) termOutput.appendChild(newLine);
+function appendTerminalText(htmlContent) {
+    const row = document.createElement("div");
+    row.innerHTML = htmlContent;
+    row.style.marginBottom = "4px";
+    if (terminalScreen) terminalScreen.appendChild(row);
 }
 
-function processCommand(cmd) {
-    if (cmd === "") return;
+function executeTerminalAction(cmdText) {
+    if (cmdText === "") return;
 
-    const args = cmd.split(" ");
-    const baseCmd = args[0].toLowerCase();
+    const userArgs = cmdText.split(" ");
+    const rootCommand = userArgs[0].toLowerCase();
 
-    switch (baseCmd) {
+    switch (rootCommand) {
         case "help": {
-            printLine("<div style='margin-bottom: 8px; font-weight: bold; color: #eeeeec;'>Available commands:</div>");
-            const commandsList = [
-                { cmd: "help", desc: "Show this message" },
-                { cmd: "whoami", desc: "Display current user" },
-                { cmd: "date", desc: "Show current system date/time" },
-                { cmd: "echo", desc: "Print text to the terminal" },
-                { cmd: "clear", desc: "Clear the terminal output" },
-                { cmd: "sysinfo", desc: "Display system information" },
-                { cmd: "calc", desc: "Evaluate mathematical expressions" },
-                { cmd: "fetch", desc: "Display OS logo and stats" },
-                { cmd: "hack", desc: "Initiate mainframe infiltration" },
-                { cmd: "matrix", desc: "Enter the digital rain" },
-                { cmd: "apt-get", desc: "Advanced package tool" }
+            appendTerminalText("<div style='margin-bottom: 8px; font-weight: bold; color: #eeeeec;'>List of available commands:</div>");
+            const commandDirectory = [
+                { cmd: "help", desc: "Displays the list of all valid commands" },
+                { cmd: "whoami", desc: "Prints the logged-in system user" },
+                { cmd: "date", desc: "Checks the current machine date and time" },
+                { cmd: "echo", desc: "Outputs your typed text to the screen" },
+                { cmd: "clear", desc: "Wipes the terminal history clean" },
+                { cmd: "sysinfo", desc: "Shows basic OS architecture details" },
+                { cmd: "calc", desc: "Evaluates standard math formulas" },
+                { cmd: "fetch", desc: "Renders the Limux ascii logo and stats" },
+                { cmd: "hack", desc: "Executes the mainframe bypass script" },
+                { cmd: "matrix", desc: "Triggers the digital rain sequence" },
+                { cmd: "apt-get", desc: "Package manager tool for developers" }
             ];
-            commandsList.forEach(c => {
-                printLine(`
+            commandDirectory.forEach(item => {
+                appendTerminalText(`
                     <div style="display: flex; gap: 15px;">
-                        <span style="color: #34e2e2; width: 80px;">${c.cmd}</span>
-                        <span style="color: #eeeeec;">- ${c.desc}</span>
+                        <span style="color: #34e2e2; width: 80px;">${item.cmd}</span>
+                        <span style="color: #eeeeec;">- ${item.desc}</span>
                     </div>
                 `);
             });
             break;
         }
 
-        case "whoami": printLine("jaswanth - System Admin & Developer"); break;
-        case "date": printLine(new Date().toString()); break;
-        case "echo": printLine(args.slice(1).join(" ")); break;
-        case "clear": if (termOutput) termOutput.innerHTML = ""; break;
-        case "sysinfo": printLine(`OS: Limux v1.0<br>Kernel: Web-Based DOM<br>UI: Transparent Glass<br>Status: <span style="color:#8ae234">Stable</span>`); break;
+        case "whoami": appendTerminalText("jaswanth - Primary Developer & System Admin"); break;
+        case "date": appendTerminalText(new Date().toString()); break;
+        case "echo": appendTerminalText(userArgs.slice(1).join(" ")); break;
+        case "clear": if (terminalScreen) terminalScreen.innerHTML = ""; break;
+        case "sysinfo": appendTerminalText(`OS: Limux build v1.0<br>Kernel: Web-DOM Integration<br>UI: Custom Frosted Glass<br>System Status: <span style="color:#8ae234">Running Smoothly</span>`); break;
 
         case "calc": {
             try {
-                const mathExpression = args.slice(1).join(" ");
-                const result = eval(mathExpression);
-                printLine(`<span style="color:#8ae234">${result}</span>`);
+                const equationStr = userArgs.slice(1).join(" ");
+                const finalMathResult = eval(equationStr);
+                appendTerminalText(`<span style="color:#8ae234">${finalMathResult}</span>`);
             } catch {
-                printLine(`<span style="color:#ef2929">Invalid expression. Try: calc 5 + 5</span>`);
+                appendTerminalText(`<span style="color:#ef2929">Math error. Kindly try something like: calc 5 + 5</span>`);
             }
             break;
         }
 
         case "hack":
-            if (termInput) termInput.disabled = true;
-            printLine(`<span style="color:#ef2929">Bypassing security protocols...</span>`);
-            setTimeout(() => { printLine(`<span style="color:#34e2e2">Extracting encrypted files... [||||||||||] 100%</span>`); }, 1000);
+            if (limuxCommandLine) limuxCommandLine.disabled = true;
+            appendTerminalText(`<span style="color:#ef2929">Initiating security bypass protocols...</span>`);
+            setTimeout(() => { appendTerminalText(`<span style="color:#34e2e2">Decrypting local file systems... [||||||||||] 100%</span>`); }, 1000);
             setTimeout(() => {
-                printLine(`<span style="color:#8ae234">Access Granted. Payload deployed.</span>`);
-                if (termInput) { termInput.disabled = false; termInput.focus(); }
+                appendTerminalText(`<span style="color:#8ae234">Mainframe Access Granted. You are in.</span>`);
+                if (limuxCommandLine) { limuxCommandLine.disabled = false; limuxCommandLine.focus(); }
             }, 2500);
             break;
 
         case "fetch": {
-            const asciiArt = `
+            const limuxLogoAscii = `
 <span style="color:#34e2e2">  _      _____ __  __ _    _ __  __</span>  <span style="color:#87af5f; font-weight:bold;">jaswanth@limux</span>
 <span style="color:#34e2e2"> | |    |_   _|  \\/  | |  | |\\ \\/ /</span>  -------------------
 <span style="color:#34e2e2"> | |      | | | \\  / | |  | | \\  / </span>  <span style="color:#8ae234">OS</span>: Limux Web Kernel 1.0
 <span style="color:#34e2e2"> | |____ _| |_| |\\/| | |__| | /  \\ </span>  <span style="color:#8ae234">UI</span>: Transparent Glass
 <span style="color:#34e2e2"> |______|_____|_|  |_|\\____/ /_/\\_\\</span>  <span style="color:#8ae234">Packages</span>: 4 (Cam, Calc, Term, Notes)
 <span style="color:#34e2e2">                                   </span>  <span style="color:#8ae234">Shell</span>: Limux Bash`;
-            printLine(`<pre style="line-height: 1.2; margin: 10px 0;">${asciiArt}</pre>`);
+            appendTerminalText(`<pre style="line-height: 1.2; margin: 10px 0;">${limuxLogoAscii}</pre>`);
             break;
         }
 
         case "apt-get": {
-            if (args[1] === "moo") {
-                const cow = `
+            if (userArgs[1] === "moo") {
+                const cowAsciiArt = `
          (__) 
          (oo) 
    /------\\/ 
@@ -351,416 +334,408 @@ function processCommand(cmd) {
  * /\\---/\\ 
     ~~   ~~   
 ...."Have you mooed today?"...`;
-                printLine(`<pre style="line-height: 1.2; margin: 0; color: #eeeeec;">${cow}</pre>`);
+                appendTerminalText(`<pre style="line-height: 1.2; margin: 0; color: #eeeeec;">${cowAsciiArt}</pre>`);
             } else {
-                printLine(`<span style="color:#ef2929">E: Invalid operation ${args[1] || ""}</span>`);
+                appendTerminalText(`<span style="color:#ef2929">Terminal Error: Invalid operation ${userArgs[1] || ""}</span>`);
             }
             break;
         }
 
         case "sudo":
-            if (args[1] === "rm" && args[2] === "-rf" && args[3] === "/") {
-                printLine(`<span style="color:#ef2929">CRITICAL WARNING: Attempting to delete root file system...</span>`);
-                setTimeout(() => printLine(`<span style="color:#ef2929">Just kidding. This is a web browser. Nice try though!</span>`), 1500);
+            if (userArgs[1] === "rm" && userArgs[2] === "-rf" && userArgs[3] === "/") {
+                appendTerminalText(`<span style="color:#ef2929">DANGER: Removing root file system...</span>`);
+                setTimeout(() => appendTerminalText(`<span style="color:#ef2929">Just joking! This is running in a browser.</span>`), 1500);
             } else {
-                printLine(`jaswanth is not in the sudoers file. <span style="color:#ef2929">This incident will be reported.</span>`);
+                appendTerminalText(`jaswanth is not in the sudoers file. <span style="color:#ef2929">This incident will be reported.</span>`);
             }
             break;
 
         case "matrix":
-            if (document.getElementById("matrix-canvas")) {
-                printLine(`<span style="color:#ef2929">Matrix is already running. Press ESC to exit.</span>`);
+            if (document.getElementById("digital-rain-canvas")) {
+                appendTerminalText(`<span style="color:#ef2929">The Matrix is already running in the background. Press ESC to stop it.</span>`);
                 break;
             }
-            printLine(`<span style="color:#8ae234">Initializing the Matrix... Press ESC to jack out.</span>`);
-            setTimeout(startMatrix, 800);
+            appendTerminalText(`<span style="color:#8ae234">Entering the Matrix... Kindly press ESC to disconnect.</span>`);
+            setTimeout(initializeMatrixRain, 800);
             break;
 
         default:
-            printLine(`<span style="color:#ef2929">bash: ${baseCmd}: command not found</span>`);
+            appendTerminalText(`<span style="color:#ef2929">bash: ${rootCommand}: command not recognized in Limux</span>`);
             break;
     }
 }
 
-function startMatrix() {
-    if (document.getElementById("matrix-canvas")) return;
+function initializeMatrixRain() {
+    if (document.getElementById("digital-rain-canvas")) return;
 
-    const canvas = document.createElement("canvas");
-    canvas.id = "matrix-canvas";
-    canvas.style.position = "fixed";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
-    canvas.style.width = "100vw";
-    canvas.style.height = "100vh";
-    canvas.style.zIndex = "999999";
-    canvas.style.pointerEvents = "none";
-    document.body.appendChild(canvas);
+    const rainCanvas = document.createElement("canvas");
+    rainCanvas.id = "digital-rain-canvas";
+    rainCanvas.style.position = "fixed";
+    rainCanvas.style.top = "0";
+    rainCanvas.style.left = "0";
+    rainCanvas.style.width = "100vw";
+    rainCanvas.style.height = "100vh";
+    rainCanvas.style.zIndex = "999999";
+    rainCanvas.style.pointerEvents = "none";
+    document.body.appendChild(rainCanvas);
 
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const canvasCtx = rainCanvas.getContext("2d");
+    rainCanvas.width = window.innerWidth;
+    rainCanvas.height = window.innerHeight;
 
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    const rainChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+    const charSize = 16;
+    const screenCols = rainCanvas.width / charSize;
+    const rainDrops = Array(Math.floor(screenCols)).fill(1);
 
-    const interval = setInterval(() => {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0";
-        ctx.font = fontSize + "px monospace";
+    const renderLoop = setInterval(() => {
+        canvasCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        canvasCtx.fillRect(0, 0, rainCanvas.width, rainCanvas.height);
+        canvasCtx.fillStyle = "#0F0";
+        canvasCtx.font = charSize + "px monospace";
 
-        for (let i = 0; i < drops.length; i++) {
-            const text = letters.charAt(Math.floor(Math.random() * letters.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
+        for (let i = 0; i < rainDrops.length; i++) {
+            const letter = rainChars.charAt(Math.floor(Math.random() * rainChars.length));
+            canvasCtx.fillText(letter, i * charSize, rainDrops[i] * charSize);
+            if (rainDrops[i] * charSize > rainCanvas.height && Math.random() > 0.975) rainDrops[i] = 0;
+            rainDrops[i]++;
         }
     }, 33);
 
-    const escListener = (e) => {
-        if (e.key === "Escape") {
-            clearInterval(interval);
-            canvas.remove();
-            document.removeEventListener("keydown", escListener);
+    const checkEscKey = (ev) => {
+        if (ev.key === "Escape") {
+            clearInterval(renderLoop);
+            rainCanvas.remove();
+            document.removeEventListener("keydown", checkEscKey);
 
-            if (termOutput && termContainer) {
-                const newLine = document.createElement("div");
-                newLine.innerHTML = `<span style="color:#34e2e2">Disconnected from the Matrix.</span>`;
-                newLine.style.marginBottom = "4px";
-                termOutput.appendChild(newLine);
-                termContainer.scrollTop = termContainer.scrollHeight;
+            if (terminalScreen && terminalWrapper) {
+                const shutdownMsg = document.createElement("div");
+                shutdownMsg.innerHTML = `<span style="color:#34e2e2">Successfully disconnected from the Matrix.</span>`;
+                shutdownMsg.style.marginBottom = "4px";
+                terminalScreen.appendChild(shutdownMsg);
+                terminalWrapper.scrollTop = terminalWrapper.scrollHeight;
             }
         }
     };
-    document.addEventListener("keydown", escListener);
+    document.addEventListener("keydown", checkEscKey);
 }
 
-// =========================
-// CALCULATOR APP ENGINE
-// =========================
-let calcCurrentVal = '0';
-const calcDisplay = document.getElementById('calc-display');
+// Custom Calculator Module
+let currentMathValue = '0';
+const screenDisplay = document.getElementById('calc-display');
 
-function calcInput(val) {
-    if (!calcDisplay) return;
+function calcInput(digitVal) {
+    if (!screenDisplay) return;
 
-    if (val === 'C') {
-        calcCurrentVal = '0';
-    } else if (val === '=') {
+    if (digitVal === 'C') {
+        currentMathValue = '0';
+    } else if (digitVal === '=') {
         try {
-            let result = String(new Function('return ' + calcCurrentVal)());
-            if (result.includes('.') && result.length > 10) {
-                result = parseFloat(result).toFixed(6).replace(/\.?0+$/, '');
+            let processedResult = String(new Function('return ' + currentMathValue)());
+            if (processedResult.includes('.') && processedResult.length > 10) {
+                processedResult = parseFloat(processedResult).toFixed(6).replace(/\.?0+$/, '');
             }
-            calcCurrentVal = result;
-        } catch (e) {
-            calcCurrentVal = 'Error';
+            currentMathValue = processedResult;
+        } catch (err) {
+            currentMathValue = 'Error';
         }
     } else {
-        if (calcCurrentVal === '0' || calcCurrentVal === 'Error') {
-            if (['+', '-', '*', '/'].includes(val)) calcCurrentVal += val;
-            else calcCurrentVal = val;
+        if (currentMathValue === '0' || currentMathValue === 'Error') {
+            if (['+', '-', '*', '/'].includes(digitVal)) currentMathValue += digitVal;
+            else currentMathValue = digitVal;
         } else {
-            calcCurrentVal += val;
+            currentMathValue += digitVal;
         }
     }
 
-    if (calcCurrentVal.length > 12) calcDisplay.style.fontSize = '18px';
-    else calcDisplay.style.fontSize = '28px';
+    if (currentMathValue.length > 12) screenDisplay.style.fontSize = '18px';
+    else screenDisplay.style.fontSize = '28px';
 
-    let displayString = calcCurrentVal.replace(/\*/g, '×').replace(/\//g, '÷');
-    calcDisplay.innerText = displayString;
+    let prettyDisplay = currentMathValue.replace(/\*/g, '×').replace(/\//g, '÷');
+    screenDisplay.innerText = prettyDisplay;
 }
 
-// =========================
-// AUDIO ENGINE (Local)
-// =========================
-let isMusicPlaying = false;
-let currentTrackIndex = 0;
-const currentAudio = new Audio();
-const playlist = [
+// Built-in Music Player Logic
+let audioIsRunning = false;
+let activeSongIndex = 0;
+const nativeAudioPlayer = new Audio();
+const localSongPlaylist = [
     { title: "Track 1 Name", artist: "Artist 1", cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500&auto=format&fit=crop", src: "./songs/song1.mp3", duration: "03:00" }
-]; // Truncated to 1 track for code cleanliness, add the rest back as needed!
+];
 
-function loadTrack(index) {
-    const track = playlist[index];
-    if (!track) return;
-    const titleEl = document.getElementById("music-title");
-    const artistEl = document.getElementById("music-artist");
-    const totalTimeEl = document.getElementById("time-total");
-    const coverEl = document.getElementById("music-cover");
+function loadTrack(targetIdx) {
+    const currentTrack = localSongPlaylist[targetIdx];
+    if (!currentTrack) return;
+    const labelTitle = document.getElementById("music-title");
+    const labelArtist = document.getElementById("music-artist");
+    const labelTotalTime = document.getElementById("time-total");
+    const albumArtwork = document.getElementById("music-cover");
 
-    if (totalTimeEl) totalTimeEl.innerText = track.duration;
-    if (titleEl) titleEl.innerText = "Loading...";
-    if (artistEl) artistEl.innerText = "...";
+    if (labelTotalTime) labelTotalTime.innerText = currentTrack.duration;
+    if (labelTitle) labelTitle.innerText = "Loading...";
+    if (labelArtist) labelArtist.innerText = "...";
 
-    currentAudio.src = track.src;
-    currentAudio.load();
+    nativeAudioPlayer.src = currentTrack.src;
+    nativeAudioPlayer.load();
 
     if (window.jsmediatags) {
-        fetch(track.src)
-            .then(response => response.blob())
-            .then(blob => {
-                window.jsmediatags.read(blob, {
-                    onSuccess: function (tag) {
-                        if (tag.tags.title && titleEl) titleEl.innerText = tag.tags.title;
-                        else if (titleEl) titleEl.innerText = track.src.split('/').pop().split('.')[0];
+        fetch(currentTrack.src)
+            .then(res => res.blob())
+            .then(audioBlob => {
+                window.jsmediatags.read(audioBlob, {
+                    onSuccess: function (metadata) {
+                        if (metadata.tags.title && labelTitle) labelTitle.innerText = metadata.tags.title;
+                        else if (labelTitle) labelTitle.innerText = currentTrack.src.split('/').pop().split('.')[0];
 
-                        if (tag.tags.artist && artistEl) artistEl.innerText = tag.tags.artist;
-                        else if (artistEl) artistEl.innerText = "Unknown Artist";
+                        if (metadata.tags.artist && labelArtist) labelArtist.innerText = metadata.tags.artist;
+                        else if (labelArtist) labelArtist.innerText = "Unknown Artist";
 
-                        const picture = tag.tags.picture;
-                        if (picture && coverEl) {
-                            let base64String = "";
-                            for (let i = 0; i < picture.data.length; i++) base64String += String.fromCharCode(picture.data[i]);
-                            coverEl.src = `data:${picture.format};base64,${window.btoa(base64String)}`;
-                        } else if (coverEl) coverEl.src = track.cover;
+                        const coverPic = metadata.tags.picture;
+                        if (coverPic && albumArtwork) {
+                            let encodedString = "";
+                            for (let idx = 0; idx < coverPic.data.length; idx++) encodedString += String.fromCharCode(coverPic.data[idx]);
+                            albumArtwork.src = `data:${coverPic.format};base64,${window.btoa(encodedString)}`;
+                        } else if (albumArtwork) albumArtwork.src = currentTrack.cover;
                     },
                     onError: function () {
-                        if (titleEl) titleEl.innerText = track.title;
-                        if (artistEl) artistEl.innerText = track.artist;
-                        if (coverEl) coverEl.src = track.cover;
+                        if (labelTitle) labelTitle.innerText = currentTrack.title;
+                        if (labelArtist) labelArtist.innerText = currentTrack.artist;
+                        if (albumArtwork) albumArtwork.src = currentTrack.cover;
                     }
                 });
             }).catch(() => {
-                if (titleEl) titleEl.innerText = track.title;
-                if (coverEl) coverEl.src = track.cover;
+                if (labelTitle) labelTitle.innerText = currentTrack.title;
+                if (albumArtwork) albumArtwork.src = currentTrack.cover;
             });
     }
 
-    const slider = document.getElementById("music-slider");
-    const currentTimeEl = document.getElementById("time-current");
-    if (slider) { slider.value = 0; slider.style.background = `rgba(255, 255, 255, 0.15)`; }
-    if (currentTimeEl) currentTimeEl.innerText = "00:00";
+    const progressTrack = document.getElementById("music-slider");
+    const labelCurrentTime = document.getElementById("time-current");
+    if (progressTrack) { progressTrack.value = 0; progressTrack.style.background = `rgba(255, 255, 255, 0.15)`; }
+    if (labelCurrentTime) labelCurrentTime.innerText = "00:00";
 }
 
-function playSafe() {
-    let playPromise = currentAudio.play();
-    if (playPromise !== undefined) {
-        playPromise.then(_ => {
-            isMusicPlaying = true;
-            const playIcon = document.getElementById('play-icon');
-            if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        }).catch(error => {
-            isMusicPlaying = false;
-            const playIcon = document.getElementById('play-icon');
-            if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
+function triggerSafePlay() {
+    let checkPromise = nativeAudioPlayer.play();
+    if (checkPromise !== undefined) {
+        checkPromise.then(_ => {
+            audioIsRunning = true;
+            const playSvg = document.getElementById('play-icon');
+            if (playSvg) playSvg.innerHTML = '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        }).catch(err => {
+            audioIsRunning = false;
+            const playSvg = document.getElementById('play-icon');
+            if (playSvg) playSvg.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
         });
     }
 }
 
 function togglePlay() {
-    if (currentAudio.paused) playSafe();
+    if (nativeAudioPlayer.paused) triggerSafePlay();
     else {
-        currentAudio.pause();
-        isMusicPlaying = false;
-        const playIcon = document.getElementById('play-icon');
-        if (playIcon) playIcon.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
+        nativeAudioPlayer.pause();
+        audioIsRunning = false;
+        const playSvg = document.getElementById('play-icon');
+        if (playSvg) playSvg.innerHTML = '<path fill="currentColor" d="M8 5v14l11-7z"/>';
     }
 }
 
 function nextTrack() {
-    currentTrackIndex++;
-    if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
-    loadTrack(currentTrackIndex);
-    if (isMusicPlaying) setTimeout(() => { playSafe(); }, 50);
+    activeSongIndex++;
+    if (activeSongIndex >= localSongPlaylist.length) activeSongIndex = 0;
+    loadTrack(activeSongIndex);
+    if (audioIsRunning) setTimeout(() => { triggerSafePlay(); }, 50);
 }
 
 function prevTrack() {
-    currentTrackIndex--;
-    if (currentTrackIndex < 0) currentTrackIndex = playlist.length - 1;
-    loadTrack(currentTrackIndex);
-    if (isMusicPlaying) setTimeout(() => { playSafe(); }, 50);
+    activeSongIndex--;
+    if (activeSongIndex < 0) activeSongIndex = localSongPlaylist.length - 1;
+    loadTrack(activeSongIndex);
+    if (audioIsRunning) setTimeout(() => { triggerSafePlay(); }, 50);
 }
 
 function toggleMusicWidget() {
-    const widget = document.getElementById('top-music-widget');
-    if (widget) widget.classList.toggle('closed');
+    const mainWidget = document.getElementById('top-music-widget');
+    if (mainWidget) mainWidget.classList.toggle('closed');
 }
 
-currentAudio.addEventListener('timeupdate', () => {
-    if (!isNaN(currentAudio.duration)) {
-        const progressPercent = (currentAudio.currentTime / currentAudio.duration) * 100;
-        const slider = document.getElementById('music-slider');
-        const currentTimeEl = document.getElementById("time-current");
+nativeAudioPlayer.addEventListener('timeupdate', () => {
+    if (!isNaN(nativeAudioPlayer.duration)) {
+        const percentageDone = (nativeAudioPlayer.currentTime / nativeAudioPlayer.duration) * 100;
+        const progressTrack = document.getElementById('music-slider');
+        const labelCurrentTime = document.getElementById("time-current");
 
-        if (slider) {
-            slider.value = progressPercent;
-            slider.style.background = `linear-gradient(to right, #d1bfe3 ${progressPercent}%, rgba(255, 255, 255, 0.15) ${progressPercent}%)`;
+        if (progressTrack) {
+            progressTrack.value = percentageDone;
+            progressTrack.style.background = `linear-gradient(to right, #d1bfe3 ${percentageDone}%, rgba(255, 255, 255, 0.15) ${percentageDone}%)`;
         }
 
-        let currentMins = Math.floor(currentAudio.currentTime / 60);
-        let currentSecs = Math.floor(currentAudio.currentTime % 60);
-        if (currentTimeEl) currentTimeEl.innerText = `0${currentMins}:${currentSecs < 10 ? '0' + currentSecs : currentSecs}`;
+        let runMins = Math.floor(nativeAudioPlayer.currentTime / 60);
+        let runSecs = Math.floor(nativeAudioPlayer.currentTime % 60);
+        if (labelCurrentTime) labelCurrentTime.innerText = `0${runMins}:${runSecs < 10 ? '0' + runSecs : runSecs}`;
     }
 });
 
-currentAudio.addEventListener('ended', () => nextTrack());
+nativeAudioPlayer.addEventListener('ended', () => nextTrack());
 
-const sliderEl = document.getElementById('music-slider');
-if (sliderEl) {
-    sliderEl.addEventListener('input', function (e) {
-        if (!isNaN(currentAudio.duration)) currentAudio.currentTime = (e.target.value / 100) * currentAudio.duration;
+const visualSlider = document.getElementById('music-slider');
+if (visualSlider) {
+    visualSlider.addEventListener('input', function (ev) {
+        if (!isNaN(nativeAudioPlayer.duration)) nativeAudioPlayer.currentTime = (ev.target.value / 100) * nativeAudioPlayer.duration;
     });
 }
-if (playlist.length > 0) loadTrack(currentTrackIndex);
+if (localSongPlaylist.length > 0) loadTrack(activeSongIndex);
 
-// =========================
-// LOCAL STORAGE NOTES ENGINE
-// =========================
-let notesArray = JSON.parse(localStorage.getItem('limux_system_notes')) || [];
-let activeNoteId = null;
+// Notes Application Logic (Local Storage saving)
+let userSavedNotes = JSON.parse(localStorage.getItem('limux_system_notes')) || [];
+let currentlyOpenNote = null;
 
-const notesListEl = document.getElementById('notes-list');
-const noteTitleInput = document.getElementById('note-title-input');
-const noteBodyInput = document.getElementById('note-body-input');
-const newNoteBtn = document.getElementById('new-note-btn');
-const saveNoteBtn = document.getElementById('save-note-btn');
-const deleteNoteBtn = document.getElementById('delete-note-btn');
+const sidebarNotesList = document.getElementById('notes-list');
+const inputNoteTitle = document.getElementById('note-title-input');
+const inputNoteBody = document.getElementById('note-body-input');
+const btnCreateNew = document.getElementById('new-note-btn');
+const btnSaveNote = document.getElementById('save-note-btn');
+const btnDeleteNote = document.getElementById('delete-note-btn');
 
-function deleteCurrentNote() {
-    if (!activeNoteId) return;
-    notesArray = notesArray.filter(note => note.id !== activeNoteId);
-    saveNotesToStorage();
-    if (notesArray.length > 0) loadNoteIntoEditor(notesArray[0].id);
-    else createNewNote();
+function trashCurrentNote() {
+    if (!currentlyOpenNote) return;
+    userSavedNotes = userSavedNotes.filter(n => n.id !== currentlyOpenNote);
+    pushNotesToDrive();
+    if (userSavedNotes.length > 0) populateNoteEditor(userSavedNotes[0].id);
+    else generateBlankNote();
 }
-if (deleteNoteBtn) deleteNoteBtn.addEventListener('click', deleteCurrentNote);
+if (btnDeleteNote) btnDeleteNote.addEventListener('click', trashCurrentNote);
 
-function saveAndNewNote() {
-    handleTyping();
-    const originalText = saveNoteBtn.innerText;
-    saveNoteBtn.innerText = "Saved!";
-    saveNoteBtn.style.background = "rgba(39, 201, 63, 0.2)";
-    saveNoteBtn.style.color = "#46da5c";
-    saveNoteBtn.style.borderColor = "rgba(39, 201, 63, 0.4)";
+function forceSaveAndReset() {
+    recordTypingData();
+    const prevText = btnSaveNote.innerText;
+    btnSaveNote.innerText = "Saved!";
+    btnSaveNote.style.background = "rgba(39, 201, 63, 0.2)";
+    btnSaveNote.style.color = "#46da5c";
+    btnSaveNote.style.borderColor = "rgba(39, 201, 63, 0.4)";
     setTimeout(() => {
-        saveNoteBtn.innerText = originalText;
-        saveNoteBtn.style.background = "";
-        saveNoteBtn.style.color = "";
-        saveNoteBtn.style.borderColor = "";
-        createNewNote();
+        btnSaveNote.innerText = prevText;
+        btnSaveNote.style.background = "";
+        btnSaveNote.style.color = "";
+        btnSaveNote.style.borderColor = "";
+        generateBlankNote();
     }, 600);
 }
-if (saveNoteBtn) saveNoteBtn.addEventListener('click', saveAndNewNote);
+if (btnSaveNote) btnSaveNote.addEventListener('click', forceSaveAndReset);
 
-function saveNotesToStorage() {
-    localStorage.setItem('limux_system_notes', JSON.stringify(notesArray));
-    renderNotesList();
+function pushNotesToDrive() {
+    localStorage.setItem('limux_system_notes', JSON.stringify(userSavedNotes));
+    paintSidebarList();
 }
 
-function renderNotesList() {
-    if (!notesListEl) return;
-    notesListEl.innerHTML = '';
-    notesArray.forEach(note => {
-        const div = document.createElement('div');
-        div.className = `note-item ${note.id === activeNoteId ? 'active' : ''}`;
-        div.onclick = () => loadNoteIntoEditor(note.id);
-        div.innerHTML = `<h4>${note.title || 'Untitled Note'}</h4><p>${note.body || ''}</p>`;
-        notesListEl.appendChild(div);
+function paintSidebarList() {
+    if (!sidebarNotesList) return;
+    sidebarNotesList.innerHTML = '';
+    userSavedNotes.forEach(n => {
+        const wrapDiv = document.createElement('div');
+        wrapDiv.className = `note-item ${n.id === currentlyOpenNote ? 'active' : ''}`;
+        wrapDiv.onclick = () => populateNoteEditor(n.id);
+        wrapDiv.innerHTML = `<h4>${n.title || 'Untitled Note'}</h4><p>${n.body || ''}</p>`;
+        sidebarNotesList.appendChild(wrapDiv);
     });
 }
 
-function createNewNote() {
-    const newNote = { id: Date.now().toString(), title: '', body: '', timestamp: Date.now() };
-    notesArray.unshift(newNote);
-    activeNoteId = newNote.id;
-    if (noteTitleInput) noteTitleInput.value = '';
-    if (noteBodyInput) noteBodyInput.value = '';
-    if (noteTitleInput) noteTitleInput.focus();
-    saveNotesToStorage();
+function generateBlankNote() {
+    const blankSlate = { id: Date.now().toString(), title: '', body: '', timestamp: Date.now() };
+    userSavedNotes.unshift(blankSlate);
+    currentlyOpenNote = blankSlate.id;
+    if (inputNoteTitle) inputNoteTitle.value = '';
+    if (inputNoteBody) inputNoteBody.value = '';
+    if (inputNoteTitle) inputNoteTitle.focus();
+    pushNotesToDrive();
 }
 
-function loadNoteIntoEditor(id) {
-    activeNoteId = id;
-    const note = notesArray.find(n => n.id === id);
-    if (note) {
-        if (noteTitleInput) noteTitleInput.value = note.title;
-        if (noteBodyInput) noteBodyInput.value = note.body;
+function populateNoteEditor(targetId) {
+    currentlyOpenNote = targetId;
+    const matchingNote = userSavedNotes.find(n => n.id === targetId);
+    if (matchingNote) {
+        if (inputNoteTitle) inputNoteTitle.value = matchingNote.title;
+        if (inputNoteBody) inputNoteBody.value = matchingNote.body;
     }
-    renderNotesList();
+    paintSidebarList();
 }
 
-function handleTyping() {
-    if (!activeNoteId) return;
-    const note = notesArray.find(n => n.id === activeNoteId);
-    if (note) {
-        note.title = noteTitleInput ? noteTitleInput.value : '';
-        note.body = noteBodyInput ? noteBodyInput.value : '';
-        note.timestamp = Date.now();
-        saveNotesToStorage();
+function recordTypingData() {
+    if (!currentlyOpenNote) return;
+    const matchingNote = userSavedNotes.find(n => n.id === currentlyOpenNote);
+    if (matchingNote) {
+        matchingNote.title = inputNoteTitle ? inputNoteTitle.value : '';
+        matchingNote.body = inputNoteBody ? inputNoteBody.value : '';
+        matchingNote.timestamp = Date.now();
+        pushNotesToDrive();
     }
 }
 
-if (noteTitleInput) noteTitleInput.addEventListener('input', handleTyping);
-if (noteBodyInput) noteBodyInput.addEventListener('input', handleTyping);
-if (newNoteBtn) newNoteBtn.addEventListener('click', createNewNote);
+if (inputNoteTitle) inputNoteTitle.addEventListener('input', recordTypingData);
+if (inputNoteBody) inputNoteBody.addEventListener('input', recordTypingData);
+if (btnCreateNew) btnCreateNew.addEventListener('click', generateBlankNote);
 
-if (notesArray.length > 0) loadNoteIntoEditor(notesArray[0].id);
-else createNewNote();
+if (userSavedNotes.length > 0) populateNoteEditor(userSavedNotes[0].id);
+else generateBlankNote();
 
-// =========================
-// HARDWARE CAMERA ENGINE
-// =========================
-let cameraStream = null;
+// Webcam Hardware Integration
+let liveCameraFeed = null;
 
-async function bootCamera() {
-    const videoEl = document.getElementById('camera-feed');
-    if (!videoEl) return;
+async function initializeWebcam() {
+    const camVideoOutput = document.getElementById('camera-feed');
+    if (!camVideoOutput) return;
     try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
-        videoEl.srcObject = cameraStream;
-        videoEl.play();
-    } catch (err) {
-        console.error("Camera access denied or missing:", err);
-        alert("Could not access the camera. Please ensure permissions are granted.");
+        liveCameraFeed = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+        camVideoOutput.srcObject = liveCameraFeed;
+        camVideoOutput.play();
+    } catch (error) {
+        console.error("Webcam hardware blocked or not found:", error);
+        alert("Kindly grant permissions to access your webcam.");
     }
 }
 
 async function handleCameraToggle() {
-    const cameraWindow = document.getElementById('camera-app');
-    toggleApp('camera-app');
-    if (!cameraWindow) return;
+    const camWin = document.getElementById('camera-app');
+    launchOrHideApp('camera-app');
+    if (!camWin) return;
     setTimeout(async () => {
-        if (cameraWindow.style.display !== 'none') await bootCamera();
-        else if (cameraStream) {
-            cameraStream.getTracks().forEach(track => track.stop());
-            cameraStream = null;
+        if (camWin.style.display !== 'none') await initializeWebcam();
+        else if (liveCameraFeed) {
+            liveCameraFeed.getTracks().forEach(track => track.stop());
+            liveCameraFeed = null;
         }
     }, 50);
 }
 
 function closeCameraApp() {
-    closeApp('camera-app');
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
+    shutDownApp('camera-app');
+    if (liveCameraFeed) {
+        liveCameraFeed.getTracks().forEach(track => track.stop());
+        liveCameraFeed = null;
     }
 }
 
 function takePhoto() {
-    const video = document.getElementById('camera-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const flash = document.getElementById('camera-flash');
-    if (!cameraStream || !video || !canvas || !flash) return;
+    const camVideoOutput = document.getElementById('camera-feed');
+    const photoCanvas = document.getElementById('camera-canvas');
+    const shutterFlash = document.getElementById('camera-flash');
+    if (!liveCameraFeed || !camVideoOutput || !photoCanvas || !shutterFlash) return;
 
-    flash.classList.add('flash');
-    setTimeout(() => flash.classList.remove('flash'), 50);
+    shutterFlash.classList.add('flash');
+    setTimeout(() => shutterFlash.classList.remove('flash'), 50);
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context.translate(canvas.width, 0);
-    context.scale(-1, 1);
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    photoCanvas.width = camVideoOutput.videoWidth;
+    photoCanvas.height = camVideoOutput.videoHeight;
+    const captureCtx = photoCanvas.getContext('2d');
+    captureCtx.translate(photoCanvas.width, 0);
+    captureCtx.scale(-1, 1);
+    captureCtx.drawImage(camVideoOutput, 0, 0, photoCanvas.width, photoCanvas.height);
 
-    const imageUrl = canvas.toDataURL('image/png');
-    const downloadLink = document.createElement('a');
-    downloadLink.href = imageUrl;
-    downloadLink.download = `Limux_Capture_${Date.now()}.png`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    const generatedImgUrl = photoCanvas.toDataURL('image/png');
+    const saveTrigger = document.createElement('a');
+    saveTrigger.href = generatedImgUrl;
+    saveTrigger.download = `Limux_Capture_${Date.now()}.png`;
+    document.body.appendChild(saveTrigger);
+    saveTrigger.click();
+    document.body.removeChild(saveTrigger);
 }
