@@ -739,3 +739,12 @@ function takePhoto() {
     saveTrigger.click();
     document.body.removeChild(saveTrigger);
 }
+
+//FOR HTML
+// ==========================================
+// SYSTEM ALIASES FOR HTML COMPATIBILITY
+// ==========================================
+function toggleApp(id) { launchOrHideApp(id); }
+function closeApp(id) { shutDownApp(id); }
+function minimizeApp(id) { minimizeAppWindow(id); }
+function maximizeApp(id) { expandAppToFull(id); }
