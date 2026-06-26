@@ -14,6 +14,7 @@ If you wish to test or modify the code on your own machine, the setup is extreme
 1. Clone this repository to your local system:
 ```bash
    git clone https://github.com/yourusername/limux-os.git
+```
 
 ## 🤖 AI Usage Disclosure
 In compliance with Stardance guidelines, I would like to transparently disclose the use of AI tools in building Limux OS. AI assistance accounted for approximately 25% of the codebase, remaining strictly under the 30% policy limit. 
